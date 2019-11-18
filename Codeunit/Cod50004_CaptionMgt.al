@@ -1,4 +1,4 @@
-codeunit 50001 "Caption Mgt."
+codeunit 50004 "Caption Mgt."
 {
     procedure GetRecordFiltersWithCaptions(locCust: Record Customer): Text;
     var

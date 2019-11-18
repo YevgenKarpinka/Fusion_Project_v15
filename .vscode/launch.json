@@ -5,7 +5,7 @@
             "type": "al",
             "request": "launch",
             "name": "Your own server",
-            "startupObjectId": 22,
+            "startupObjectId": 8614,
             "startupObjectType": "Page",
             "breakOnError": true,
             "launchBrowser": true,

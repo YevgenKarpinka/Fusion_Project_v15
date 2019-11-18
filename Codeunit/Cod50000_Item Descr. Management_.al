@@ -10,6 +10,10 @@ codeunit 50000 "Item Descr. Management"
         Clear(ExcelBuffer."Cell Value as Blob");
         if StrLen(Value) <= MaxStrLen(ExcelBuffer."Cell Value as Text") then exit;
 
+        // TempBlob.Blob := ExcelBuffer."Cell Value as Blob";
+        // TempBlob.WriteAsText(Value, TEXTENCODING::UTF8);
+        // ExcelBuffer."Cell Value as Blob" := TempBlob.Blob;
+
         ExcelBuffer."Cell Value as Blob".CreateOutStream(_OutStream, TextEncoding::UTF8);
         _OutStream.WriteText(Value);
         isHandled := true;
@@ -129,8 +133,8 @@ codeunit 50000 "Item Descr. Management"
         if ItemDescr.FindSet(false, false) then
             repeat
                 ExcelBuffer.AddColumn(ItemDescr."Item No.", false, '', false, false, false, '@', ExcelBuffer."Cell Type"::Text);
-                ExcelBuffer.AddColumn(ItemDescr.GetDescription(), false, '', false, false, false, '@', ExcelBuffer."Cell Type"::Text);
-                ExcelBuffer.AddColumn(ItemDescr.GetDescription(), false, '', false, false, false, '@', ExcelBuffer."Cell Type"::Text);
+                ExcelBuffer.AddColumn(ItemDescr.GetTextFromBlobField(ItemDescr.FieldNo(Description)), false, '', false, false, false, '@', ExcelBuffer."Cell Type"::Text);
+                ExcelBuffer.AddColumn(ItemDescr.GetTextFromBlobField(ItemDescr.FieldNo(Description)), false, '', false, false, false, '@', ExcelBuffer."Cell Type"::Text);
                 // ItemDescr.SetBulletPoint1(GetValueAtCell(RowNo, 3));
                 // ItemDescr.SetBulletPoint2(GetValueAtCell(RowNo, 4));
                 // ItemDescr.SetBulletPoint3(GetValueAtCell(RowNo, 5));
@@ -197,36 +201,36 @@ codeunit 50000 "Item Descr. Management"
             Window.Open(StrSubstNo(txtDialog, ItemDescr.TableCaption) + txtProgressBar);
         for RowNo := 4 to Rows do begin
             ItemDescr."Item No." := GetValueAtCell(RowNo, 1);
-            ItemDescr.SetDescription(GetValueAtCell(RowNo, 2));
-            ItemDescr.SetBulletPoint1(GetValueAtCell(RowNo, 3));
-            ItemDescr.SetBulletPoint2(GetValueAtCell(RowNo, 4));
-            ItemDescr.SetBulletPoint3(GetValueAtCell(RowNo, 5));
-            ItemDescr.SetBulletPoint4(GetValueAtCell(RowNo, 6));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Description), GetValueAtCell(RowNo, 2));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 1"), GetValueAtCell(RowNo, 3));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 2"), GetValueAtCell(RowNo, 4));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 3"), GetValueAtCell(RowNo, 5));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 4"), GetValueAtCell(RowNo, 6));
             ItemDescr."Bullet Point 5" := GetValueAtCell(RowNo, 7);
             ItemDescr."Main Image URL" := GetValueAtCell(RowNo, 8);
             ItemDescr."Other Image URL" := GetValueAtCell(RowNo, 9);
             ItemDescr."Label Image URL" := GetValueAtCell(RowNo, 10);
             ItemDescr."Label Image URL 2" := GetValueAtCell(RowNo, 11);
-            ItemDescr.SetSearchTerms(GetValueAtCell(RowNo, 12));
-            ItemDescr.SetSearchTermsForGoogleOnly(GetValueAtCell(RowNo, 13));
-            ItemDescr.SetIngredients(GetValueAtCell(RowNo, 14));
-            ItemDescr.SetIndications(GetValueAtCell(RowNo, 15));
-            ItemDescr.SetDirections(GetValueAtCell(RowNo, 16));
-            ItemDescr.SetWarning(GetValueAtCell(RowNo, 17));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Search Terms"), GetValueAtCell(RowNo, 12));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Search Terms for Google only"), GetValueAtCell(RowNo, 13));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Ingredients), GetValueAtCell(RowNo, 14));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Indications), GetValueAtCell(RowNo, 15));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Directions), GetValueAtCell(RowNo, 16));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Warning), GetValueAtCell(RowNo, 17));
             ItemDescr."Name RU" := GetValueAtCell(RowNo, 18);
             ItemDescr."Name RU 2" := GetValueAtCell(RowNo, 19);
-            ItemDescr.SetDescriptionRU(GetValueAtCell(RowNo, 20));
-            ItemDescr.SetBulletPoint1RU(GetValueAtCell(RowNo, 21));
-            ItemDescr.SetBulletPoint2RU(GetValueAtCell(RowNo, 22));
-            ItemDescr.SetBulletPoint3RU(GetValueAtCell(RowNo, 23));
-            ItemDescr.SetBulletPoint4RU(GetValueAtCell(RowNo, 24));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Description RU"), GetValueAtCell(RowNo, 20));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 1 RU"), GetValueAtCell(RowNo, 21));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 2 RU"), GetValueAtCell(RowNo, 22));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 3 RU"), GetValueAtCell(RowNo, 23));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 4 RU"), GetValueAtCell(RowNo, 24));
             ItemDescr."Bullet Point 5 RU" := GetValueAtCell(RowNo, 25);
-            ItemDescr.SetIngredientsRU(GetValueAtCell(RowNo, 26));
-            ItemDescr.SetIndicationsRU(GetValueAtCell(RowNo, 27));
-            ItemDescr.SetDirectionsRU(GetValueAtCell(RowNo, 28));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Ingredients RU"), GetValueAtCell(RowNo, 26));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Indications RU"), GetValueAtCell(RowNo, 27));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Directions RU"), GetValueAtCell(RowNo, 28));
             Evaluate(ItemDescr.New, GetValueAtCell(RowNo, 29));
             Evaluate(ItemDescr."Sell-out", GetValueAtCell(RowNo, 30));
-            ItemDescr.Barcode := GetValueAtCell(RowNo, 31);
+            Evaluate(ItemDescr.Barcode, GetValueAtCell(RowNo, 31));
             if ItemDescr.Insert() then ItemDescr.Modify();
 
             if GuiAllowed then
@@ -241,17 +245,16 @@ codeunit 50000 "Item Descr. Management"
     procedure GetValueAtCell(RowNo: Integer; ColNo: Integer): Text;
     var
         _InStream: InStream;
-        Result: Text;
-    // CR: Text[1];
+        TypeHelper: Codeunit "Type Helper";
+        CR: Text[1];
     begin
         if not ExcelBuffer.Get(RowNo, ColNo) then exit('');
         if not ExcelBuffer."Cell Value as Blob".HasValue then exit(ExcelBuffer."Cell Value as Text");
 
         ExcelBuffer.CALCFIELDS("Cell Value as Blob");
-        // CR[1] := 10;
+        CR[1] := 10;
         ExcelBuffer."Cell Value as Blob".CreateInStream(_InStream, TextEncoding::UTF8);
-        _InStream.ReadText(Result);
-        EXIT(Result);
+        EXIT(TypeHelper.ReadAsTextWithSeparator(_InStream, CR));
     end;
 
     var
@@ -264,7 +267,6 @@ codeunit 50000 "Item Descr. Management"
         txtProgressBar: TextConst ENU = '#1##################', RUS = '#1##################';
         fileMgt: Codeunit "File Management";
         ConfigProgressBar: Codeunit "Config. Progress Bar";
-        CalledFromCode: Boolean;
         PackageFileNameTxt: Label 'json%1.json', Locked = true;
         ExportPackageTxt: Label 'Exporting package';
 }

@@ -784,17 +784,20 @@ End Function
   <DataSets>
     <DataSet Name="DataSet_Result">
       <Fields>
-        <Field Name="Vendor_Name">
-          <DataField>Vendor_Name</DataField>
+        <Field Name="VendorName">
+          <DataField>VendorName</DataField>
         </Field>
-        <Field Name="Vendor_Name_2">
-          <DataField>Vendor_Name_2</DataField>
+        <Field Name="VendorName_2">
+          <DataField>VendorName_2</DataField>
         </Field>
         <Field Name="CompanyName">
           <DataField>CompanyName</DataField>
         </Field>
-        <Field Name="CurrReport_PAGENO">
-          <DataField>CurrReport_PAGENO</DataField>
+        <Field Name="DocumentNo">
+          <DataField>DocumentNo</DataField>
+        </Field>
+        <Field Name="Posting_Date">
+          <DataField>Posting_Date</DataField>
         </Field>
         <Field Name="PH_TableCaption_PH_Filter">
           <DataField>PH_TableCaption_PH_Filter</DataField>
