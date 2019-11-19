@@ -10,10 +10,6 @@ codeunit 50000 "Item Descr. Management"
         Clear(ExcelBuffer."Cell Value as Blob");
         if StrLen(Value) <= MaxStrLen(ExcelBuffer."Cell Value as Text") then exit;
 
-        // TempBlob.Blob := ExcelBuffer."Cell Value as Blob";
-        // TempBlob.WriteAsText(Value, TEXTENCODING::UTF8);
-        // ExcelBuffer."Cell Value as Blob" := TempBlob.Blob;
-
         ExcelBuffer."Cell Value as Blob".CreateOutStream(_OutStream, TextEncoding::UTF8);
         _OutStream.WriteText(Value);
         isHandled := true;
@@ -201,6 +197,8 @@ codeunit 50000 "Item Descr. Management"
             Window.Open(StrSubstNo(txtDialog, ItemDescr.TableCaption) + txtProgressBar);
         for RowNo := 4 to Rows do begin
             ItemDescr."Item No." := GetValueAtCell(RowNo, 1);
+            if ItemDescr.Insert() then ItemDescr.Modify();
+
             ItemDescr.SetTextToBlobField(ItemDescr.FieldNo(Description), GetValueAtCell(RowNo, 2));
             ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 1"), GetValueAtCell(RowNo, 3));
             ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Bullet Point 2"), GetValueAtCell(RowNo, 4));
@@ -231,10 +229,10 @@ codeunit 50000 "Item Descr. Management"
             Evaluate(ItemDescr.New, GetValueAtCell(RowNo, 29));
             Evaluate(ItemDescr."Sell-out", GetValueAtCell(RowNo, 30));
             Evaluate(ItemDescr.Barcode, GetValueAtCell(RowNo, 31));
-            if ItemDescr.Insert() then ItemDescr.Modify();
+            ItemDescr.Modify();
 
             if GuiAllowed then
-                Window.Update(1, RowNo / Rows * 10000);
+                Window.Update(1, RowNo - 3);
         end;
         ExcelBuffer.CloseBook;
 

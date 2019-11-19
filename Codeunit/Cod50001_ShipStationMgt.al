@@ -12,7 +12,6 @@ codeunit 50001 "ShipStation Mgt."
 
     procedure Connect2ShipStation(SPCode: Integer; Body2Request: Text; newURL: Text): Text
     var
-        // TempBlob: Codeunit "Temp Blob";
         Base64Convert: Codeunit "Base64 Convert";
         SourceParameters: Record "Source Parameters";
         RequestMessage: HttpRequestMessage;
@@ -43,7 +42,6 @@ codeunit 50001 "ShipStation Mgt."
             Headers.Add('Authorization', SourceParameters."FSp AuthorizationToken");
         end else
             if SourceParameters."FSp UserName" <> '' then begin
-                // TempBlob.WriteAsText(StrSubstNo('%1:%2', SourceParameters."FSp UserName", SourceParameters."FSp Password"), TextEncoding::Windows);
                 Headers.Add('Authorization', StrSubstNo('Basic %1',
                             Base64Convert.ToBase64(StrSubstNo('%1:%2', SourceParameters."FSp UserName", SourceParameters."FSp Password"))));
             end;
@@ -377,14 +375,14 @@ codeunit 50001 "ShipStation Mgt."
         lblOrder: TextConst ENU = 'SalesOrder', RUS = 'SalesOrder';
         DocumentAttachment: Record "Document Attachment";
         FileName: Text;
-        txtLabelToPDF: Text;
+        LabelToPDF: Text;
     begin
         RecRef.OPEN(DATABASE::"Warehouse Shipment Header");
         WhseShipHeader.Get(_WhseShipDocNo);
         RecRef.GETTABLE(WhseShipHeader);
-        txtLabelToPDF := Base64Convert.FromBase64(_txtLabelBase64);
+        LabelToPDF := Base64Convert.FromBase64(_txtLabelBase64);
         FileName := StrSubstNo('%1-%2.pdf', _txtBefore, lblOrder);
-        SaveAttachment2WhseShmt(RecRef, FileName, txtLabelToPDF);
+        SaveAttachment2WhseShmt(RecRef, FileName, LabelToPDF);
     end;
 
     local procedure SaveAttachment2WhseShmt(RecRef: RecordRef; FileName: Text; LabelToPDF: Text)
@@ -405,10 +403,9 @@ codeunit 50001 "ShipStation Mgt."
             Init();
             Validate("File Extension", FileManagement.GetExtension(IncomingFileName));
             Validate("File Name", CopyStr(FileManagement.GetFileNameWithoutExtension(IncomingFileName), 1, MaxStrLen("File Name")));
-            TempBlob.CreateInStream(_InStream);
             TempBlob.CreateOutStream(_OutStream);
-            _InStream.ReadText(LabelToPDF);
             _OutStream.WriteText(LabelToPDF);
+            TempBlob.CreateInStream(_InStream);
             "Document Reference ID".ImportStream(_InStream, IncomingFileName);
             Validate("Table ID", RecRef.Number);
             FieldRef := RecRef.Field(1);
@@ -495,7 +492,6 @@ codeunit 50001 "ShipStation Mgt."
 
         JSObjectHeader.Add('testLabel', false);
         JSObjectHeader.WriteTo(JSText);
-        // Message(JSText);
         exit(JSText);
     end;
 
@@ -554,7 +550,7 @@ codeunit 50001 "ShipStation Mgt."
         JSObjectLine: JsonObject;
         JSObjectArray: JsonArray;
         _SL: Record "Sales Line";
-    // _ID: Record "Item Description";
+        _ID: Record "Item Description";
     begin
         _SL.SetCurrentKey(Type, Quantity);
         _SL.SetRange("Document Type", _SL."Document Type"::Order);
@@ -564,11 +560,12 @@ codeunit 50001 "ShipStation Mgt."
         if _SL.FindSet(false, false) then
             repeat
                 Clear(JSObjectLine);
-                // _ID.Get(_SL."No.");
+
                 JSObjectLine.Add('lineItemKey', _SL."Line No.");
                 JSObjectLine.Add('sku', _SL."No.");
                 JSObjectLine.Add('name', _SL.Description);
-                // JSObjectLine.Add('imageUrl', _ID."Main Image URL");
+                if _ID.Get(_SL."No.") then
+                    JSObjectLine.Add('imageUrl', _ID."Main Image URL");
                 JSObjectLine.Add('weight', jsonWeightFromItem(_SL."Gross Weight"));
                 JSObjectLine.Add('quantity', Decimal2Integer(_SL.Quantity));
                 JSObjectLine.Add('unitPrice', Round(_SL."Amount Including VAT" / _SL.Quantity, 0.01));
@@ -718,7 +715,6 @@ codeunit 50001 "ShipStation Mgt."
         exit(ShippingAgent.Code);
     end;
 
-    // procedure GetCarriersFromShipStation(var _SA: Record "Shipping Agent" temporary; var _SAS: Record "Shipping Agent Services" temporary): Boolean
     procedure GetCarriersFromShipStation(): Boolean
     var
         _SA: Record "Shipping Agent";
@@ -737,8 +733,6 @@ codeunit 50001 "ShipStation Mgt."
             _SA.SetCurrentKey("SS Code");
             _SA.SetRange("SS Code", txtCarrierCode);
             if not _SA.FindFirst() then
-                // _SA.TempInsertCarrierFromShipStation(_SA, TempGetLastCarrierCode(_SA), CopyStr(GetJSToken(CarrierToken.AsObject(), 'name').AsValue().AsText(), 1, MaxStrLen(_SA.Name)),
-                //                                            txtCarrierCode, GetJSToken(CarrierToken.AsObject(), 'shippingProviderId').AsValue().AsInteger());
                 _SA.InsertCarrierFromShipStation(GetLastCarrierCode(), CopyStr(GetJSToken(CarrierToken.AsObject(), 'name').AsValue().AsText(), 1, MaxStrLen(_SA.Name)),
                                                            txtCarrierCode, GetJSToken(CarrierToken.AsObject(), 'shippingProviderId').AsValue().AsInteger());
         end;
@@ -818,7 +812,6 @@ codeunit 50001 "ShipStation Mgt."
         exit(lblSASCode);
     end;
 
-    // procedure GetShippingRatesByCarrier(_SH: Record "Sales Header"; var _SA: Record "Shipping Agent" temporary; var _SAS: Record "Shipping Agent Services" temporary)
     procedure GetShippingRatesByCarrier(_SH: Record "Sales Header")
     var
         TotalGrossWeight: Decimal;
@@ -853,7 +846,6 @@ codeunit 50001 "ShipStation Mgt."
         exit(TotalGrossWeight);
     end;
 
-    // procedure UpdateCarriersAndServices(var _SA: Record "Shipping Agent" temporary; var _SAS: Record "Shipping Agent Services" temporary)
     procedure UpdateCarriersAndServices()
     var
         _SA: Record "Shipping Agent";
@@ -863,7 +855,6 @@ codeunit 50001 "ShipStation Mgt."
             GetCarriersFromShipStation();
     end;
 
-    // procedure InitShippingAmount(_SAS: Record "Shipping Agent Services" temporary)
     procedure InitShippingAmount()
     var
         _SAS: Record "Shipping Agent Services";
@@ -874,7 +865,6 @@ codeunit 50001 "ShipStation Mgt."
         end;
     end;
 
-    // procedure GetRatesByCarrierFromShipStation(_SH: Record "Sales Header"; _SA: Record "Shipping Agent" temporary; var _SAS: Record "Shipping Agent Services" temporary)
     procedure GetRatesByCarrierFromShipStation(_SH: Record "Sales Header")
     var
         _SA: Record "Shipping Agent";
@@ -897,13 +887,11 @@ codeunit 50001 "ShipStation Mgt."
                 jsRatesArray.ReadFrom(jsText);
 
                 // update Shipping Cost into Shipping Agent Service
-                // InsertServicesAndUpdateServiceCostsFromShipStation(_SA."SS Code", _SAS, jsRatesArray);
                 InsertServicesAndUpdateServiceCostsFromShipStation(_SA."SS Code", jsRatesArray);
                 Clear(jsObject);
             until _SA.Next() = 0;
     end;
 
-    // procedure InsertServicesAndUpdateServiceCostsFromShipStation(CarrierCode: Text[20]; var _SAS: Record "Shipping Agent Services" temporary; jsonRatesArray: JsonArray)
     procedure InsertServicesAndUpdateServiceCostsFromShipStation(CarrierCode: Text[20]; jsonRatesArray: JsonArray)
     var
         _SAS: Record "Shipping Agent Services";
@@ -918,8 +906,6 @@ codeunit 50001 "ShipStation Mgt."
                 SetRange("SS Code", ServiceCode);
                 if not FindFirst() then
                     // Insert Services
-                    // TempInsertServicesFromShipStation(_SAS, GetCarrierCodeBySSAgentCode(CarrierCode), GetLastCarrierServiceCode(), CarrierCode, ServiceCode,
-                    //                           CopyStr(GetJSToken(CarrierToken.AsObject(), 'serviceName').AsValue().AsText(), 1, MaxStrLen(_SAS.Description)));
                     InsertServicesFromShipStation(GetCarrierCodeBySSAgentCode(CarrierCode), GetLastCarrierServiceCode(), CarrierCode, ServiceCode,
                                               CopyStr(GetJSToken(CarrierToken.AsObject(), 'serviceName').AsValue().AsText(), 1, MaxStrLen(_SAS.Description)));
                 "Shipment Cost" := GetJSToken(CarrierToken.AsObject(), 'shipmentCost').AsValue().AsDecimal();

@@ -188,6 +188,8 @@ table 50000 "Item Description"
         _FieldRef: FieldRef;
         _RecordRef: RecordRef;
         _InStream: InStream;
+        TypeHelper: Codeunit "Type Helper";
+        CR: Text[1];
     begin
         _RecordRef.GetTable(Rec);
         _FieldRef := _RecordRef.Field(_FieldNo);
@@ -196,8 +198,9 @@ table 50000 "Item Description"
         if not tmpTenantMedia.Content.HasValue then
             _TextField := ''
         else begin
-            tmpTenantMedia.Content.CreateInStream(_InStream);
-            _InStream.ReadText(_TextField);
+            CR[1] := 10;
+            tmpTenantMedia.Content.CreateInStream(_InStream, TextEncoding::UTF8);
+            _TextField := TypeHelper.ReadAsTextWithSeparator(_InStream, CR);
         end;
     end;
 
@@ -209,6 +212,8 @@ table 50000 "Item Description"
         _InStream: InStream;
         _OutStream: OutStream;
         _ClientFileName: Text;
+        TypeHelper: Codeunit "Type Helper";
+        CR: Text[1];
     begin
         _RecordRef.GetTable(Rec);
         _FieldRef := _RecordRef.Field(_FieldNo);
@@ -217,6 +222,7 @@ table 50000 "Item Description"
         if tmpTenantMedia.Content.HasValue then
             if not Confirm(Text001) then
                 Error('');
+        tmpTenantMedia.Content.CreateInStream(_InStream, TextEncoding::UTF8);
         if UploadIntoStream(Text002,
                             Text003,
                             Text004,
@@ -226,11 +232,13 @@ table 50000 "Item Description"
         else
             exit;
 
-        tmpTenantMedia.Content.CreateOutStream(_OutStream);
+        tmpTenantMedia.Content.CreateOutStream(_OutStream, TextEncoding::UTF8);
         CopyStream(_OutStream, _InStream);
         _FieldRef.Value := tmpTenantMedia.Content;
         _RecordRef.Modify;
-        _InStream.ReadText(_TextField);
+
+        CR[1] := 10;
+        _TextField := TypeHelper.ReadAsTextWithSeparator(_InStream, CR);
     end;
 
     procedure BlobOnValidate(_FieldNo: Integer; var _TextField: Text);
@@ -243,7 +251,7 @@ table 50000 "Item Description"
         if _TextField <> '' then begin
             _RecordRef.GetTable(Rec);
             _FieldRef := _RecordRef.Field(_FieldNo);
-            tmpTenantMedia.Content.CreateOutStream(_OutStream);
+            tmpTenantMedia.Content.CreateOutStream(_OutStream, TextEncoding::UTF8);
             _OutStream.WriteText(_TextField);
             _FieldRef.Value := tmpTenantMedia.Content;
             _RecordRef.Modify;
@@ -289,7 +297,7 @@ table 50000 "Item Description"
         if _TextField <> '' then begin
             _RecordRef.GetTable(Rec);
             _FieldRef := _RecordRef.Field(_FieldNo);
-            tmpTenantMedia.Content.CreateOutStream(_OutStream);
+            tmpTenantMedia.Content.CreateOutStream(_OutStream, TextEncoding::UTF8);
             _OutStream.WriteText(_TextField);
             _FieldRef.Value := tmpTenantMedia.Content;
             _RecordRef.Modify;
@@ -303,6 +311,8 @@ table 50000 "Item Description"
         _RecordRef: RecordRef;
         _InStream: InStream;
         _TextField: Text;
+        TypeHelper: Codeunit "Type Helper";
+        CR: Text[1];
     begin
         _RecordRef.GetTable(Rec);
         _FieldRef := _RecordRef.Field(_FieldNo);
@@ -311,8 +321,9 @@ table 50000 "Item Description"
         if not tmpTenantMedia.Content.HasValue then
             _TextField := ''
         else begin
-            tmpTenantMedia.Content.CreateInStream(_InStream);
-            _InStream.ReadText(_TextField);
+            CR[1] := 10;
+            tmpTenantMedia.Content.CreateInStream(_InStream, TextEncoding::UTF8);
+            _TextField := TypeHelper.ReadAsTextWithSeparator(_InStream, CR);
         end;
         exit(_TextField);
     end;
