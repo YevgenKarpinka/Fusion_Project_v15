@@ -1,4 +1,4 @@
-report 50000 "Customer List"
+report 50000 "Purchase Invoice"
 {
     CaptionML = ENU = 'Purchase Invoice', RUS = 'Purchase Invoice';
     RDLCLayout = 'Purchase Invoice.rdl';
@@ -7,16 +7,17 @@ report 50000 "Customer List"
     {
         dataitem(PurchaseHeader; "Purchase Header")
         {
-            // RequestFilterFields = "No.", "Search Name", "Customer Posting Group";
+            RequestFilterFields = "No.", "Buy-from Vendor No.";
+            DataItemTableView = where("Document Type" = Const(Order));
             column(VendorName; "Buy-from Vendor Name") { }
             column(VendorName_2; "Buy-from Vendor Name 2") { }
-            column(CompanyName; COMPANYNAME)
+            column(CompanyName; CompanyName)
             {
                 CaptionML = ENU = 'Company Name', RUS = 'Имя Компании';
             }
             column(DocumentNo; "No.") { }
             column(Posting_Date; "Posting Date") { }
-            column(PH_TableCaption_PH_Filter; TABLECAPTION + ': ' + PH_Filter) { }
+            column(PH_TableCaption_PH_Filter; TableCaption + ': ' + PH_Filter) { }
             column(PH_Filter; PH_Filter) { }
             column(VendAddr1; VendAddr[1]) { }
             column(VendAddr2; VendAddr[2]) { }
@@ -26,10 +27,11 @@ report 50000 "Customer List"
             column(VendAddr6; VendAddr[6]) { }
             column(VendAddr7; VendAddr[7]) { }
             column(VendAddr8; VendAddr[8]) { }
+            column(VendAddr9; VendAddr[9]) { }
             dataitem("Purchase Line"; "Purchase Line")
             {
-                DataItemTableView = SORTING("Document Type", "Document No.", "Line No.");
-                DataItemLink = "Document Type" = FIELD("Document Type"), "Document No." = FIELD("No.");
+                DataItemTableView = sorting("Document Type", "Document No.", "Line No.");
+                DataItemLink = "Document Type" = field("Document Type"), "Document No." = field("No.");
 
                 column(PositionNo; PositionNo)
                 {
@@ -53,10 +55,10 @@ report 50000 "Customer List"
                 {
                     DecimalPlaces = 0 : 0;
                 }
-                column(FDA_Value; CaptionMgt.GetItemAttributeValue('FDA Code', "No."))
+                column(FDA_Value; CaptionMgt.GetItemAttributeValue(FDA_Label, "No."))
                 {
                 }
-                column(HTS_Value; CaptionMgt.GetItemAttributeValue('HTS Code', "No."))
+                column(HTS_Value; CaptionMgt.GetItemAttributeValue(HTS_Label, "No."))
                 {
                 }
 
@@ -65,11 +67,6 @@ report 50000 "Customer List"
             trigger OnAfterGetRecord();
             begin
                 FormatAddressFields(PurchaseHeader);
-                with Vend do begin
-                    Get("Buy-from Vendor No.");
-                    FormatAddr.FormatAddr(VendAddr, Name, "Name 2", Contact, Address, "Address 2",
-                                             City, "Post Code", County, "Country/Region Code");
-                end;
             end;
 
 
@@ -120,9 +117,11 @@ report 50000 "Customer List"
         FormatAddr: Codeunit "Format Address";
         CaptionMgt: Codeunit "Caption Mgt.";
         PH_Filter: Text;
-        BuyFromAddr: array[8] of Text[100];
-        VendAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        CompanyAddr: array[8] of Text[100];
+        BuyFromAddr: array[9] of Text[100];
+        VendAddr: array[9] of Text[100];
+        ShipToAddr: array[9] of Text[100];
+        CompanyAddr: array[9] of Text[100];
         PositionNo: Integer;
+        FDA_Label: Label 'FDA Code';
+        HTS_Label: Label 'HTS Code';
 }
