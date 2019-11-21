@@ -448,6 +448,14 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
                         ItemDescriptionModify;
                     end;
                 }
+                field("Baby Care"; "Baby Care")
+                {
+                    ApplicationArea = All;
+                }
+                field("Web Item"; "Web Item")
+                {
+                    ApplicationArea = All;
+                }
             }
             group(groupWebArea)
             {

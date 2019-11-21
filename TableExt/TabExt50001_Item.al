@@ -47,5 +47,15 @@ tableextension 50001 "Item Ext." extends Item
             FieldClass = FlowFilter;
             CaptionML = ENU = 'Expiration Date Filter', RUS = 'Фильтр по дате просрочки';
         }
+        field(50004; "Baby Care"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            CaptionML = ENU = 'Baby Care', RUS = 'Забота о ребенке';
+        }
+        field(50005; "Web Item"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            CaptionML = ENU = 'Web Item', RUS = 'Web товар';
+        }
     }
 }
