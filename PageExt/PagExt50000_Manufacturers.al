@@ -15,9 +15,10 @@ pageextension 50000 "Manufacturers Ext." extends Manufacturers
             }
         }
     }
-    actions
-    {
-    }
+    local procedure MyProcedure()
     var
         myInt: Integer;
+    begin
+
+    end;
 }

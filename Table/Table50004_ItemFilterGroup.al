@@ -12,12 +12,10 @@ table 50004 "Item Filter Group"
         field(2; "Filter Group"; Text[50])
         {
             DataClassification = ToBeClassified;
-            TableRelation = Item;
         }
         field(3; "Filter Value"; Text[100])
         {
             DataClassification = ToBeClassified;
-            TableRelation = Item;
         }
     }
 

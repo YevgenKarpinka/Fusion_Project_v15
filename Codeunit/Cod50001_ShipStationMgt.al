@@ -77,8 +77,6 @@ codeunit 50001 "ShipStation Mgt."
         OrderJSToken: JsonToken;
         Counter: Integer;
         txtOrders: Text;
-        txtCarrierCode: Text[50];
-        txtServiceCode: Text[100];
         _SH: Record "Sales Header";
         txtMessage: TextConst ENU = 'Order(s) Updated:\ %1', RUS = 'Заказ(ы) обновлен(ы):\ %1';
     begin
@@ -108,14 +106,8 @@ codeunit 50001 "ShipStation Mgt."
     var
         JSText: Text;
         JSObject: JsonObject;
-        OrdersJSArray: JsonArray;
-        OrderJSToken: JsonToken;
-        Counter: Integer;
         txtOrders: Text;
-        txtCarrierCode: Text[50];
-        txtServiceCode: Text[100];
         _SH: Record "Sales Header";
-        SourceParameters: Record "Source Parameters";
     begin
         // Get Order from Shipstation to Fill Variables
         JSText := Connect2ShipStation(1, '', StrSubstNo('/%1', _SH."ShipStation Order ID"));
@@ -161,7 +153,6 @@ codeunit 50001 "ShipStation Mgt."
         JSText: Text;
         JSObjectHeader: JsonObject;
         jsonTagsArray: JsonArray;
-
     begin
         if (DocNo = '') or (not _SH.Get(_SH."Document Type"::Order, DocNo)) then exit(false);
 
@@ -195,7 +186,98 @@ codeunit 50001 "ShipStation Mgt."
         // update Sales Header from ShipStation
         JSObjectHeader.ReadFrom(JSText);
         UpdateSalesHeaderFromShipStation(DocNo, JSObjectHeader);
+    end;
 
+    procedure CreateItemInWooComerse(ItemNo: Code[20]): Boolean
+    var
+        _Item: Record Item;
+        _jsonText: Text;
+        _jsonObject: JsonObject;
+        _jsonArray: JsonArray;
+        _SalesPrice: Decimal;
+    begin
+        if (ItemNo = '') or (not _Item.Get(ItemNo)) then exit(false);
+
+        _jsonObject.Add('SKU', _Item."No.");
+        _jsonObject.Add('name', jsonGetName(_Item."No."));
+        _jsonObject.Add('price_regular', _Item."Unit Price");
+        _SalesPrice := _GetItemPrice(_Item."No.");
+        if _SalesPrice < _Item."Unit Price" then begin
+            _jsonObject.Add('price_sale', _SalesPrice);
+            _jsonObject.Add('discount_value', _SalesPrice * 100 / _Item."Unit Price");
+        end else begin
+            _jsonObject.Add('price_sale', 0);
+            _jsonObject.Add('discount_value', 0);
+        end;
+        _jsonObject.Add('available', jsonGetInventory(_Item."No."));
+
+        Clear(_jsonArray);
+        _jsonObject.Add('tagIds', _jsonArray);
+    end;
+
+    local procedure jsonGetInventory(_ItemNo: Code[20]): JsonObject
+    var
+        _ItemDescr: Record "Item Description";
+        _Item: Record Item;
+        _jsonObject: JsonObject;
+        engNotInventory: Label 'Not Inventory';
+        engInventory: Label 'Inventory';
+        ruNotInventory: Label 'Нет в наличии';
+        ruInventory: Label 'В наличии';
+    begin
+        if not _Item.Get(_ItemNo) then exit(_jsonObject);
+        _Item.CalcFields(Inventory);
+        case _Item.Inventory of
+            0:
+                begin
+                    _jsonObject.Add('eng', engNotInventory);
+                    _jsonObject.Add('ru', ruNotInventory);
+                end;
+            else begin
+                    _jsonObject.Add('eng', engInventory);
+                    _jsonObject.Add('ru', ruInventory);
+                end;
+        end;
+        exit(_jsonObject)
+    end;
+
+
+    local procedure _GetItemPrice(_ItemNo: Code[20]): Integer
+    var
+        _Item: Record Item;
+        _SalesPrice: Record "Sales Price";
+    begin
+        if not _Item.Get(_ItemNo) then exit(0);
+
+        with _SalesPrice do begin
+            SetCurrentKey("Item No.", "Sales Type", "Ending Date", "Unit Price");
+            SetRange("Item No.", _Item."No.");
+            SetRange("Sales Type", "Sales Type"::"All Customers");
+            SetFilter("Ending Date", '%1..', Today);
+            if FindFirst() then
+                exit("Unit Price")
+            else begin
+                SetRange("Ending Date");
+                if FindFirst() then
+                    exit("Unit Price");
+            end;
+        end;
+
+        exit(_Item."Unit Price");
+    end;
+
+    local procedure jsonGetName(_ItemNo: Code[20]): JsonObject
+    var
+        _ItemDescr: Record "Item Description";
+        _Item: Record Item;
+        _jsonObject: JsonObject;
+    begin
+        if not _Item.Get(_ItemNo) or not _ItemDescr.Get(_ItemNo) then exit(_jsonObject);
+
+        _jsonObject.Add('eng', _Item.Description + _Item."Description 2");
+        _jsonObject.Add('ru', _ItemDescr."Name RU" + _ItemDescr."Name RU 2");
+
+        exit(_jsonObject)
     end;
 
     local procedure GetCarrierCodeByAgentCode(ShippingAgentCode: Code[10]): Text[50]
@@ -313,11 +395,6 @@ codeunit 50001 "ShipStation Mgt."
         _SH: Record "Sales Header";
         JSText: Text;
         JSObject: JsonObject;
-        notExistOrdersList: Text;
-        OrdersListCreateLabel: Text;
-        OrdersCancelled: Text;
-        txtLabel: Text;
-        txtBeforeName: Text;
         WhseShipDocNo: Code[20];
     begin
         if (DocNo = '') or (not _SH.Get(_SH."Document Type"::Order, DocNo)) or (_SH."ShipStation Shipment ID" = '') then exit(false);

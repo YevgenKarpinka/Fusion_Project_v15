@@ -149,6 +149,46 @@ table 50000 "Item Description"
         {
             DataClassification = ToBeClassified;
         }
+        field(32; "Unit Count Net"; Decimal)
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(33; "Unit Count Type"; Text[20])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(34; "FDA Code"; Text[20])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(35; "HTS Code"; Text[20])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(36; "Product Type"; Text[30])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(37; "Item Type Keyword"; Text[100])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(38; "Package Quantity"; Integer)
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(39; "Serving Size"; Text[150])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(40; "Servings per container"; Text[150])
+        {
+            DataClassification = ToBeClassified;
+        }
+        field(41; "Legal Disclaimer"; Blob)
+        {
+            DataClassification = ToBeClassified;
+        }
     }
     keys
     {

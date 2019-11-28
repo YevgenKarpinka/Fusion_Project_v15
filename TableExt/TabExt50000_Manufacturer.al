@@ -3,7 +3,7 @@ tableextension 50000 "Manufacturer Ext." extends Manufacturer
     fields
     {
         // Add changes to table fields here
-        field(50000; Address; Text[150])
+        field(50000; Address; Text[200])
         {
             DataClassification = ToBeClassified;
         }

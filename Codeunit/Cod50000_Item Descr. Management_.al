@@ -229,6 +229,17 @@ codeunit 50000 "Item Descr. Management"
             Evaluate(ItemDescr.New, GetValueAtCell(RowNo, 29));
             Evaluate(ItemDescr."Sell-out", GetValueAtCell(RowNo, 30));
             Evaluate(ItemDescr.Barcode, GetValueAtCell(RowNo, 31));
+            Evaluate(ItemDescr."Unit Count Net", GetValueAtCell(RowNo, 32));
+            Evaluate(ItemDescr."Unit Count Type", GetValueAtCell(RowNo, 33));
+            Evaluate(ItemDescr."FDA Code", GetValueAtCell(RowNo, 34));
+            Evaluate(ItemDescr."HTS Code", GetValueAtCell(RowNo, 35));
+            Evaluate(ItemDescr."Product Type", GetValueAtCell(RowNo, 36));
+            Evaluate(ItemDescr."Item Type Keyword", GetValueAtCell(RowNo, 37));
+            Evaluate(ItemDescr."Package Quantity", GetValueAtCell(RowNo, 38));
+            Evaluate(ItemDescr."Serving Size", GetValueAtCell(RowNo, 39));
+            Evaluate(ItemDescr."Servings per container", GetValueAtCell(RowNo, 40));
+            ItemDescr.SetTextToBlobField(ItemDescr.FieldNo("Legal Disclaimer"), GetValueAtCell(RowNo, 41));
+
             ItemDescr.Modify();
 
             if GuiAllowed then

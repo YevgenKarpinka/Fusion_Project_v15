@@ -199,6 +199,22 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
                         end;
                     }
                 }
+                group(groupLegalDisclaimer)
+                {
+                    CaptionML = ENU = 'Legal Disclaimer';
+                    field("Legal Disclaimer"; txtLegalDisclaimer)
+                    {
+                        ApplicationArea = All;
+                        ShowCaption = false;
+                        MultiLine = true;
+
+                        trigger OnValidate()
+                        begin
+                            if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                            ItemDescription.BlobOnValidate(ItemDescription.FieldNo("Legal Disclaimer"), txtLegalDisclaimer);
+                        end;
+                    }
+                }
             }
             group(BulletPointArea)
             {
@@ -492,6 +508,96 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
                         ItemDescriptionModify;
                     end;
                 }
+                field(UnitCountNet; ItemDescription."Unit Count Net")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(UnitCountType; ItemDescription."Unit Count Type")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(FDA_Code; ItemDescription."FDA Code")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(HTS_Code; ItemDescription."HTS Code")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(ProductType; ItemDescription."Product Type")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(ItemTypeKeyword; ItemDescription."Item Type Keyword")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(PackageQty; ItemDescription."Package Quantity")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(ServingSize; ItemDescription."Serving Size")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
+                field(ServingsPerContainer; ItemDescription."Servings per container")
+                {
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if not ItemDescriptionExist then ItemDescription.InitItemDescription("No.");
+                        ItemDescriptionModify;
+                    end;
+                }
             }
         }
     }
@@ -510,6 +616,7 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
         ItemDescriptionExist := false;
         EditAllowed := CurrPage.EDITABLE;
         Clear(txtWarning);
+        Clear(txtLegalDisclaimer);
         Clear(txtDescription);
         Clear(txtBulletPoint1);
         Clear(txtBulletPoint2);
@@ -531,6 +638,7 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
         if ItemDescription.Get("No.") then begin
             ItemDescriptionExist := true;
             ItemDescription.BlobOnAfterGetRec(ItemDescription.FieldNo(Warning), txtWarning);
+            ItemDescription.BlobOnAfterGetRec(ItemDescription.FieldNo("Legal Disclaimer"), txtLegalDisclaimer);
             ItemDescription.BlobOnAfterGetRec(ItemDescription.FieldNo(Description), txtDescription);
             ItemDescription.BlobOnAfterGetRec(ItemDescription.FieldNo("Bullet Point 1"), txtBulletPoint1);
             ItemDescription.BlobOnAfterGetRec(ItemDescription.FieldNo("Bullet Point 2"), txtBulletPoint2);
@@ -563,6 +671,7 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
         EditAllowed: Boolean;
         ItemDescription: Record "Item Description";
         txtWarning: Text;
+        txtLegalDisclaimer: Text;
         txtDescription: Text;
         txtBulletPoint1: Text;
         txtBulletPoint2: Text;
