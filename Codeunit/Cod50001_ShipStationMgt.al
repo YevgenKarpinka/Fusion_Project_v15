@@ -188,20 +188,21 @@ codeunit 50001 "ShipStation Mgt."
         UpdateSalesHeaderFromShipStation(DocNo, JSObjectHeader);
     end;
 
-    procedure CreateItemInWooComerse(ItemNo: Code[20]): Boolean
+    procedure CreateItemInWooComerse(ItemNo: Code[20]): JsonArray
     var
         _Item: Record Item;
+        _ItemDescription: Record "Item Description";
         _jsonText: Text;
         _jsonObject: JsonObject;
         _jsonArray: JsonArray;
         _SalesPrice: Decimal;
     begin
-        if (ItemNo = '') or (not _Item.Get(ItemNo)) then exit(false);
+        if (ItemNo = '') or not _Item.Get(ItemNo) or not _Item."Web Item" or not _ItemDescription.Get(ItemNo) then exit(_jsonArray);
 
         _jsonObject.Add('SKU', _Item."No.");
         _jsonObject.Add('name', jsonGetName(_Item."No."));
         _jsonObject.Add('price_regular', _Item."Unit Price");
-        _SalesPrice := _GetItemPrice(_Item."No.");
+        _SalesPrice := Round(_GetItemPrice(_Item."No."), 0.01, '>');
         if _SalesPrice < _Item."Unit Price" then begin
             _jsonObject.Add('price_sale', _SalesPrice);
             _jsonObject.Add('discount_value', _SalesPrice * 100 / _Item."Unit Price");
@@ -210,9 +211,191 @@ codeunit 50001 "ShipStation Mgt."
             _jsonObject.Add('discount_value', 0);
         end;
         _jsonObject.Add('available', jsonGetInventory(_Item."No."));
+        _jsonObject.Add('category', jsonGetCategory(_Item."Item Category Code", 0));
+        _jsonObject.Add('subcategory', jsonGetCategory(_Item."Item Category Code", 1));
+        _jsonObject.Add('subsubcategory', jsonGetCategory(_Item."Item Category Code", 2));
+        _jsonObject.Add('filters_group', jsonGetFilterGroupArray(_Item."No."));
+        _jsonObject.Add('release_form', _Item."Item Form");
+        _jsonObject.Add('brand', jsonGetBrand(_Item."No."));
+        _jsonObject.Add('manufacturer', jsonGetManufacturer(_Item."No."));
+        _jsonObject.Add('description', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Description), _ItemDescription.FieldNo("Description RU")));
+        _jsonObject.Add('indication', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Indications), _ItemDescription.FieldNo("Indications RU")));
+        _jsonObject.Add('ingredients', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Ingredients), _ItemDescription.FieldNo("Ingredients RU")));
+        _jsonObject.Add('warning', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Warning), 0));
+        _jsonObject.Add('legal_disclaimer', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo("Legal Disclaimer"), 0));
+        _jsonObject.Add('ingredients', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Directions), _ItemDescription.FieldNo("Directions RU")));
+        _jsonObject.Add('bullet_points', jsonGetBulletPoints(_Item."No."));
+        _jsonObject.Add('images', jsonGetImages(_Item."No."));
+        _jsonObject.Add('delivery', false); // TO DO
+        if _ItemDescription."Sell-out" = 0D then
+            _jsonObject.Add('is_sale', false)
+        else
+            _jsonObject.Add('is_sale', Today <= _ItemDescription."Sell-out");
+        if _ItemDescription.New = 0D then
+            _jsonObject.Add('is_new', false)
+        else
+            _jsonObject.Add('is_new', Today <= _ItemDescription.New);
+
+        _jsonArray.Add(_jsonObject);
+
+        _jsonArray.WriteTo(_jsonText);
+        Message(_jsonText);
+    end;
+
+    local procedure jsonGetImages(_ItemNo: Code[20]): JsonArray
+    var
+        _ItemDescription: Record "Item Description";
+        _jsonArray: JsonArray;
+    begin
+        if not _ItemDescription.Get(_ItemNo) then exit(_jsonArray);
+
+        if _ItemDescription."Main Image URL" <> '' then
+            _jsonArray.Add(_ItemDescription."Main Image URL");
+        if _ItemDescription."Other Image URL" <> '' then
+            _jsonArray.Add(_ItemDescription."Other Image URL");
+        if _ItemDescription."Label Image URL" <> '' then
+            _jsonArray.Add(_ItemDescription."Label Image URL");
+        if _ItemDescription."Label Image URL 2" <> '' then
+            _jsonArray.Add(_ItemDescription."Label Image URL 2");
+
+        exit(_jsonArray);
+    end;
+
+    local procedure jsonGetBulletPoints(_ItemNo: Code[20]): JsonObject
+    var
+        _ItemDescription: Record "Item Description";
+        _jsonObject: JsonObject;
+        _jsonArray: JsonArray;
+        _txtDescription: Text;
+    begin
+        if not _ItemDescription.Get(_ItemNo) then exit(_jsonObject);
+
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 1"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 2"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 3"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 4"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _jsonArray.Add(_ItemDescription."Bullet Point 5");
+        _jsonObject.Add('eng', _jsonArray);
 
         Clear(_jsonArray);
-        _jsonObject.Add('tagIds', _jsonArray);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 1 RU"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 2 RU"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 3 RU"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _ItemDescription.BlobOnAfterGetRec(_ItemDescription.FieldNo("Bullet Point 4 RU"), _txtDescription);
+        _jsonArray.Add(_txtDescription);
+        _jsonArray.Add(_ItemDescription."Bullet Point 5 RU");
+        _jsonObject.Add('ru', _jsonArray);
+
+        exit(_jsonObject);
+    end;
+
+    local procedure jsonGetBlobFromItemDescription(_ItemNo: Code[20]; engFiledNo: Integer; ruFiledNo: Integer): JsonObject
+    var
+        _ItemDescription: Record "Item Description";
+        _jsonObject: JsonObject;
+        _txtDescription: Text;
+    begin
+        if not _ItemDescription.Get(_ItemNo) then exit(_jsonObject);
+
+        if engFiledNo <> 0 then
+            _ItemDescription.BlobOnAfterGetRec(engFiledNo, _txtDescription);
+        _jsonObject.Add('eng', _txtDescription);
+
+        Clear(_txtDescription);
+        if ruFiledNo <> 0 then
+            _ItemDescription.BlobOnAfterGetRec(ruFiledNo, _txtDescription);
+        _jsonObject.Add('ru', _txtDescription);
+
+        exit(_jsonObject)
+    end;
+
+    local procedure jsonGetManufacturer(_ManufacturerCode: Code[10]): JsonObject
+    var
+        _Manufacturer: Record Manufacturer;
+        _jsonObject: JsonObject;
+    begin
+        if not _Manufacturer.Get(_ManufacturerCode) then exit(_jsonObject);
+
+        _jsonObject.Add('id', _Manufacturer.Code);
+        _jsonObject.Add('name', _Manufacturer.Name);
+
+        exit(_jsonObject)
+    end;
+
+    local procedure jsonGetBrand(_ItemNo: Code[20]): JsonObject
+    var
+        _Brand: Record Brand;
+        _Item: Record Item;
+        _jsonObject: JsonObject;
+    begin
+        if not _Item.Get(_ItemNo) or not _Brand.Get(_Item."Brand Code", _Item."Manufacturer Code") then exit(_jsonObject);
+
+        _jsonObject.Add('id', _Brand.Code);
+        _jsonObject.Add('name', _Brand.Name);
+
+        exit(_jsonObject)
+    end;
+
+    local procedure jsonGetFilterGroupArray(_ItemNo: Code[20]): JsonArray
+    var
+        _ItemFilterGroup: Record "Item Filter Group";
+        _oldItemFilterGroup: Text[50];
+        _jsonItemFilterGroupArray: JsonArray;
+        _jsonItemFilterGroup: JsonObject;
+    begin
+        with _ItemFilterGroup do begin
+            SetRange("Item No.", _ItemNo);
+            if FindSet(false, false) then
+                repeat
+                    if _oldItemFilterGroup <> "Filter Group" then begin
+                        _jsonItemFilterGroup.Add('name', "Filter Group");
+                        _jsonItemFilterGroup.Add('filters', AddItemFilterGroupArray("Item No.", "Filter Group"));
+                        _jsonItemFilterGroupArray.Add(_jsonItemFilterGroup);
+                    end;
+                until Next() = 0;
+        end;
+    end;
+
+    local procedure AddItemFilterGroupArray(_ItemNo: Code[20]; _FilterGroup: Text[50]): JsonArray
+    var
+        _ItemFilterGroup: Record "Item Filter Group";
+        _jsonItemFilterGroupArray: JsonArray;
+    begin
+        with _ItemFilterGroup do begin
+            SetRange("Item No.", _ItemNo);
+            SetRange("Filter Group", _FilterGroup);
+            if FindSet(false, false) then
+                repeat
+                    _jsonItemFilterGroupArray.Add("Filter Value");
+                until Next() = 0;
+        end;
+    end;
+
+    local procedure jsonGetCategory(_ItemCategoryCode: Code[20]; _Level: Integer): JsonObject
+    var
+        _ItemCategory: Record "Item Category";
+        _jsonObject: JsonObject;
+        _ParentCategory: Code[20];
+    begin
+        if not _ItemCategory.Get(_ItemCategoryCode) or (_ItemCategoryCode = '') then exit(_jsonObject);
+
+        with _ItemCategory do begin
+            if Indentation = _Level then begin
+                _jsonObject.Add('id', Description);
+                _jsonObject.Add('eng', Description);
+                exit(_jsonObject);
+            end;
+            if "Parent Category" <> '' then
+                exit(jsonGetCategory("Parent Category", _Level));
+        end;
+        exit(_jsonObject);
     end;
 
     local procedure jsonGetInventory(_ItemNo: Code[20]): JsonObject
@@ -241,8 +424,7 @@ codeunit 50001 "ShipStation Mgt."
         exit(_jsonObject)
     end;
 
-
-    local procedure _GetItemPrice(_ItemNo: Code[20]): Integer
+    local procedure _GetItemPrice(_ItemNo: Code[20]): Decimal
     var
         _Item: Record Item;
         _SalesPrice: Record "Sales Price";

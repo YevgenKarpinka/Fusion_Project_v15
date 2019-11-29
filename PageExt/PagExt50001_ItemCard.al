@@ -601,8 +601,26 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
             }
         }
     }
+
     actions
     {
+        addbefore(Dimensions)
+        {
+            action(ItemFilterGroup)
+            {
+                ApplicationArea = All;
+                CaptionML = ENU = 'Item Filter Group', RUS = 'Группы фильтров товара';
+                Image = EditFilter;
+
+                trigger OnAction()
+                var
+                    _ItemFilterGroup: Record "Item Filter Group";
+                begin
+                    _ItemFilterGroup.SetRange("Item No.", "No.");
+                    Page.RunModal(Page::"Item Filter Group List", _ItemFilterGroup);
+                end;
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
