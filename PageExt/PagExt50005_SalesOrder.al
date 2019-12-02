@@ -96,6 +96,7 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                 action("Create/Update Order")
                 {
                     ApplicationArea = All;
+                    CaptionML = ENU = 'Create/Update Order', RUS = 'Создать/Обновить Заказ';
                     Image = CreateDocuments;
 
                     trigger OnAction()
@@ -121,6 +122,7 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                 action("Get Rates")
                 {
                     ApplicationArea = All;
+                    CaptionML = ENU = 'Get Rates', RUS = 'Получить Стоимость';
                     Image = CalculateShipment;
 
                     trigger OnAction()
@@ -147,6 +149,7 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                 action("Create Label to Order")
                 {
                     ApplicationArea = All;
+                    CaptionML = ENU = 'Create Label to Order', RUS = 'Создать бирку заказа';
                     Image = PrintReport;
 
                     trigger OnAction()
@@ -165,6 +168,7 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                 action("Void Label to Order")
                 {
                     ApplicationArea = All;
+                    CaptionML = ENU = 'Void Label to Order', RUS = 'Отменить бирку заказа';
                     Image = VoidCreditCard;
 
                     trigger OnAction()

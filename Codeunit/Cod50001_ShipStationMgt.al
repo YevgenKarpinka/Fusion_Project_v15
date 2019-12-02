@@ -188,16 +188,15 @@ codeunit 50001 "ShipStation Mgt."
         UpdateSalesHeaderFromShipStation(DocNo, JSObjectHeader);
     end;
 
-    procedure CreateItemInWooComerse(ItemNo: Code[20]): JsonArray
+    procedure CreateJsonItemForWooComerse(ItemNo: Code[20]): JsonObject
     var
         _Item: Record Item;
         _ItemDescription: Record "Item Description";
         _jsonText: Text;
         _jsonObject: JsonObject;
-        _jsonArray: JsonArray;
         _SalesPrice: Decimal;
     begin
-        if (ItemNo = '') or not _Item.Get(ItemNo) or not _Item."Web Item" or not _ItemDescription.Get(ItemNo) then exit(_jsonArray);
+        if (ItemNo = '') or not _Item.Get(ItemNo) or not _Item."Web Item" or not _ItemDescription.Get(ItemNo) then exit(_jsonObject);
 
         _jsonObject.Add('SKU', _Item."No.");
         _jsonObject.Add('name', jsonGetName(_Item."No."));
@@ -216,14 +215,14 @@ codeunit 50001 "ShipStation Mgt."
         _jsonObject.Add('subsubcategory', jsonGetCategory(_Item."Item Category Code", 2));
         _jsonObject.Add('filters_group', jsonGetFilterGroupArray(_Item."No."));
         _jsonObject.Add('release_form', _Item."Item Form");
-        _jsonObject.Add('brand', jsonGetBrand(_Item."No."));
-        _jsonObject.Add('manufacturer', jsonGetManufacturer(_Item."No."));
+        _jsonObject.Add('brand', jsonGetBrand(_Item."Brand Code", _Item."Manufacturer Code"));
+        _jsonObject.Add('manufacturer', jsonGetManufacturer(_Item."Manufacturer Code"));
         _jsonObject.Add('description', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Description), _ItemDescription.FieldNo("Description RU")));
         _jsonObject.Add('indication', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Indications), _ItemDescription.FieldNo("Indications RU")));
         _jsonObject.Add('ingredients', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Ingredients), _ItemDescription.FieldNo("Ingredients RU")));
         _jsonObject.Add('warning', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Warning), 0));
         _jsonObject.Add('legal_disclaimer', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo("Legal Disclaimer"), 0));
-        _jsonObject.Add('ingredients', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Directions), _ItemDescription.FieldNo("Directions RU")));
+        _jsonObject.Add('directions', jsonGetBlobFromItemDescription(_Item."No.", _ItemDescription.FieldNo(Directions), _ItemDescription.FieldNo("Directions RU")));
         _jsonObject.Add('bullet_points', jsonGetBulletPoints(_Item."No."));
         _jsonObject.Add('images', jsonGetImages(_Item."No."));
         _jsonObject.Add('delivery', false); // TO DO
@@ -236,10 +235,10 @@ codeunit 50001 "ShipStation Mgt."
         else
             _jsonObject.Add('is_new', Today <= _ItemDescription.New);
 
-        _jsonArray.Add(_jsonObject);
 
-        _jsonArray.WriteTo(_jsonText);
-        Message(_jsonText);
+        _jsonObject.WriteTo(_jsonText);
+        // Message(_jsonText);
+        exit(_jsonObject);
     end;
 
     local procedure jsonGetImages(_ItemNo: Code[20]): JsonArray
@@ -329,13 +328,12 @@ codeunit 50001 "ShipStation Mgt."
         exit(_jsonObject)
     end;
 
-    local procedure jsonGetBrand(_ItemNo: Code[20]): JsonObject
+    local procedure jsonGetBrand(_BrandCode: Code[20]; _ManufacturerCode: Code[10]): JsonObject
     var
         _Brand: Record Brand;
-        _Item: Record Item;
         _jsonObject: JsonObject;
     begin
-        if not _Item.Get(_ItemNo) or not _Brand.Get(_Item."Brand Code", _Item."Manufacturer Code") then exit(_jsonObject);
+        if not _Brand.Get(_BrandCode, _ManufacturerCode) then exit(_jsonObject);
 
         _jsonObject.Add('id', _Brand.Code);
         _jsonObject.Add('name', _Brand.Name);
@@ -349,6 +347,7 @@ codeunit 50001 "ShipStation Mgt."
         _oldItemFilterGroup: Text[50];
         _jsonItemFilterGroupArray: JsonArray;
         _jsonItemFilterGroup: JsonObject;
+        _jsonItemFilters: JsonArray;
     begin
         with _ItemFilterGroup do begin
             SetRange("Item No.", _ItemNo);
@@ -358,9 +357,12 @@ codeunit 50001 "ShipStation Mgt."
                         _jsonItemFilterGroup.Add('name', "Filter Group");
                         _jsonItemFilterGroup.Add('filters', AddItemFilterGroupArray("Item No.", "Filter Group"));
                         _jsonItemFilterGroupArray.Add(_jsonItemFilterGroup);
+                        _jsonItemFilters.Add(_jsonItemFilterGroup);
+                        Clear(_jsonItemFilterGroup);
                     end;
                 until Next() = 0;
         end;
+        exit(_jsonItemFilters);
     end;
 
     local procedure AddItemFilterGroupArray(_ItemNo: Code[20]; _FilterGroup: Text[50]): JsonArray
@@ -376,6 +378,7 @@ codeunit 50001 "ShipStation Mgt."
                     _jsonItemFilterGroupArray.Add("Filter Value");
                 until Next() = 0;
         end;
+        exit(_jsonItemFilterGroupArray);
     end;
 
     local procedure jsonGetCategory(_ItemCategoryCode: Code[20]; _Level: Integer): JsonObject
@@ -1192,4 +1195,5 @@ codeunit 50001 "ShipStation Mgt."
         errTotalGrossWeightIsZero: TextConst ENU = 'Total Gross Weight Order = %1\But Must Be > 0', RUS = 'Общий Брутто вес Заказа = %1\Должен быть > 0';
         lblAwaitingShipment: Label 'awaiting_shipment';
         confUpdateCarriersList: TextConst ENU = 'Update the list %1?', RUS = 'Обновить список %1?';
+
 }
