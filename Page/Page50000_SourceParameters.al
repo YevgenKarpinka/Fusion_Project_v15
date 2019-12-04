@@ -4,7 +4,7 @@ page 50000 "Source Parameters"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Source Parameters";
-    SourceTableView = sorting (Code) order(descending);
+    SourceTableView = sorting(Code) order(descending);
 
     layout
     {
@@ -75,6 +75,19 @@ page 50000 "Source Parameters"
                 begin
                     ShipStationMgt.Connect2ShipStation(1, '', '');
                     Message('Connection Ok!');
+                end;
+            }
+            action("Test Connection2eShop")
+            {
+                ApplicationArea = All;
+                CaptionML = ENU = 'Test Connection2eShop', RUS = 'Тестовое подключение к eShop';
+
+                trigger OnAction()
+                var
+                    ShipStationMgt: Codeunit "ShipStation Mgt.";
+                begin
+                    ShipStationMgt.Connect2eShop('LOGIN', '', '');
+                    Message('Connection2eShop Ok!');
                 end;
             }
         }

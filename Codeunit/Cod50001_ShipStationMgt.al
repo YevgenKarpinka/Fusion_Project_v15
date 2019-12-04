@@ -10,6 +10,63 @@ codeunit 50001 "ShipStation Mgt."
         testMode := _testMode;
     end;
 
+    procedure Connect2eShop(SPCode: Code[20]; Body2Request: Text; newURL: Text): Text
+    var
+        SourceParameters: Record "Source Parameters";
+        RequestMessage: HttpRequestMessage;
+        ResponseMessage: HttpResponseMessage;
+        Headers: HttpHeaders;
+        Client: HttpClient;
+        responseText: Text;
+    begin
+        SourceParameters.SetCurrentKey("FSp Event");
+        SourceParameters.Get(SPCode);
+
+        RequestMessage.Method := Format(SourceParameters."FSp RestMethod");
+        if newURL = '' then
+            RequestMessage.SetRequestUri(SourceParameters."FSp URL")
+        else
+            RequestMessage.SetRequestUri(StrSubstNo('%1%2', SourceParameters."FSp URL", newURL));
+
+        RequestMessage.GetHeaders(Headers);
+        if SPCode = 'LOGIN2ESHOP' then begin
+            // Headers.Add('Content-Type', Format(SourceParameters."FSp ContentType"));
+            Headers.Add('email', SourceParameters."FSp UserName");
+            Headers.Add('password', SourceParameters."FSp UserName");
+        end;
+
+        if SourceParameters."FSp RestMethod" = SourceParameters."FSp RestMethod"::POST then begin
+        // if SPCode = 'ADDPRODUCT2ESHOP' then begin
+            if Body2Request <> '' then
+                RequestMessage.Content.WriteFrom(Body2Request);
+            RequestMessage.Content.GetHeaders(Headers);
+            if SourceParameters."FSp ContentType" <> 0 then begin
+                Headers.Remove('Content-Type');
+                Headers.Add('Content-Type', Format(SourceParameters."FSp ContentType"));
+            end;
+        end;
+
+        Client.Send(RequestMessage, ResponseMessage);
+        ResponseMessage.Content.ReadAs(responseText);
+        If ResponseMessage.IsSuccessStatusCode() then exit(responseText);
+        Error(responseText);
+    end;
+
+    procedure AddProduct2eShop(Body2Request: Text)
+    var
+        SourceParameters: Record "Source Parameters";
+        RequestMessage: HttpRequestMessage;
+        ResponseMessage: HttpResponseMessage;
+        Headers: HttpHeaders;
+        Client: HttpClient;
+        responseText: Text;
+    begin
+        responseText := Connect2eShop('LOGIN2ESHOP', '', '');
+        Message(responseText);
+        responseText := Connect2eShop('ADDPRODUCT2ESHOP', Body2Request, responseText);
+        Message(responseText);
+    end;
+
     procedure Connect2ShipStation(SPCode: Integer; Body2Request: Text; newURL: Text): Text
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -852,7 +909,7 @@ codeunit 50001 "ShipStation Mgt."
         JSObjectLine: JsonObject;
     begin
         JSObjectLine.Add('value', _GrossWeight + 1000);
-        JSObjectLine.Add('units', 'grams');
+        JSObjectLine.Add('units', 'ounces'); // Lena confirmed
         exit(JSObjectLine);
     end;
 

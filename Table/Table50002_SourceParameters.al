@@ -58,8 +58,8 @@ table 50002 "Source Parameters"
         {
             DataClassification = ToBeClassified;
             CaptionML = ENU = 'FSp ContentType', RUS = 'FSp ContentType';
-            OptionMembers = " ","application/json";
-            OptionCaptionML = ENU = ' ,application/json', RUS = ' ,application/json';
+            OptionMembers = " ","application/json","application/x-www-form-urlencoded";
+            OptionCaptionML = ENU = ' ,application/json,application/x-www-form-urlencoded', RUS = ' ,application/json,application/x-www-form-urlencoded';
         }
         field(10; "FSp ETag"; Text[100])
         {
