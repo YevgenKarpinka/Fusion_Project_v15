@@ -86,7 +86,7 @@ page 50000 "Source Parameters"
                 var
                     ShipStationMgt: Codeunit "ShipStation Mgt.";
                 begin
-                    ShipStationMgt.Connect2eShop('LOGIN', '', '');
+                    ShipStationMgt.Connect2eShop('LOGIN2ESHOP', '', '');
                     Message('Connection2eShop Ok!');
                 end;
             }

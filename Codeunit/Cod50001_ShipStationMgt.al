@@ -19,7 +19,6 @@ codeunit 50001 "ShipStation Mgt."
         Client: HttpClient;
         responseText: Text;
     begin
-        SourceParameters.SetCurrentKey("FSp Event");
         SourceParameters.Get(SPCode);
 
         RequestMessage.Method := Format(SourceParameters."FSp RestMethod");
@@ -29,16 +28,12 @@ codeunit 50001 "ShipStation Mgt."
             RequestMessage.SetRequestUri(StrSubstNo('%1%2', SourceParameters."FSp URL", newURL));
 
         RequestMessage.GetHeaders(Headers);
-        if SPCode = 'LOGIN2ESHOP' then begin
-            // Headers.Add('Content-Type', Format(SourceParameters."FSp ContentType"));
-            Headers.Add('email', SourceParameters."FSp UserName");
-            Headers.Add('password', SourceParameters."FSp UserName");
-        end;
 
         if SourceParameters."FSp RestMethod" = SourceParameters."FSp RestMethod"::POST then begin
-        // if SPCode = 'ADDPRODUCT2ESHOP' then begin
-            if Body2Request <> '' then
-                RequestMessage.Content.WriteFrom(Body2Request);
+            if SPCode = 'LOGIN2ESHOP' then begin
+                Body2Request := StrSubstNo('%1=%2&%3=%4', 'email', SourceParameters."FSp UserName", 'password', SourceParameters."FSp Password");
+            end;
+            RequestMessage.Content.WriteFrom(Body2Request);
             RequestMessage.Content.GetHeaders(Headers);
             if SourceParameters."FSp ContentType" <> 0 then begin
                 Headers.Remove('Content-Type');
@@ -60,11 +55,17 @@ codeunit 50001 "ShipStation Mgt."
         Headers: HttpHeaders;
         Client: HttpClient;
         responseText: Text;
+        msgAddedProduct: TextConst ENU = 'Added Product:', RUS = 'Добавлено товаров:';
+        msgUpdatedProduct: TextConst ENU = 'Updated Product:', RUS = 'Обновлено товаров:';
+        _jsonObject: JsonObject;
     begin
-        responseText := Connect2eShop('LOGIN2ESHOP', '', '');
-        Message(responseText);
-        responseText := Connect2eShop('ADDPRODUCT2ESHOP', Body2Request, responseText);
-        Message(responseText);
+        if globalToken = '' then
+            globalToken := DelChr(Connect2eShop('LOGIN2ESHOP', '', ''), '<>', '"');
+        responseText := Connect2eShop('ADDPRODUCT2ESHOP', Body2Request, globalToken);
+
+        // _jsonObject.ReadFrom(responseText);
+        // Message(StrSubstNo('%1%2\%3%4', msgAddedProduct, GetJSToken(_jsonObject, 'added').AsValue().AsInteger(),
+        // msgUpdatedProduct, GetJSToken(_jsonObject, 'updated').AsValue().AsInteger()));
     end;
 
     procedure Connect2ShipStation(SPCode: Integer; Body2Request: Text; newURL: Text): Text
@@ -416,6 +417,7 @@ codeunit 50001 "ShipStation Mgt."
                         _jsonItemFilterGroupArray.Add(_jsonItemFilterGroup);
                         _jsonItemFilters.Add(_jsonItemFilterGroup);
                         Clear(_jsonItemFilterGroup);
+                        _oldItemFilterGroup := "Filter Group";
                     end;
                 until Next() = 0;
         end;
@@ -1252,5 +1254,5 @@ codeunit 50001 "ShipStation Mgt."
         errTotalGrossWeightIsZero: TextConst ENU = 'Total Gross Weight Order = %1\But Must Be > 0', RUS = 'Общий Брутто вес Заказа = %1\Должен быть > 0';
         lblAwaitingShipment: Label 'awaiting_shipment';
         confUpdateCarriersList: TextConst ENU = 'Update the list %1?', RUS = 'Обновить список %1?';
-
+        globalToken: Text;
 }
