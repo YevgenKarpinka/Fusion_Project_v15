@@ -31,17 +31,16 @@ codeunit 50004 "Caption Mgt."
         exit('');
     end;
 
-    procedure SaveStreamToFile(_streamText: Text)
+    procedure SaveStreamToFile(_streamText: Text; ToFileName: Variant)
     var
         tmpTenantMedia: Record "Tenant Media";
         _inStream: inStream;
         _outStream: outStream;
-        ToFileName: Variant;
     begin
         tmpTenantMedia.Content.CreateOutStream(_OutStream, TextEncoding::UTF8);
         _outStream.WriteText(_streamText);
         tmpTenantMedia.Content.CreateInStream(_inStream, TextEncoding::UTF8);
-        ToFileName := 'SampleFile.txt';
+        // ToFileName := 'SampleFile.txt';
         DownloadFromStream(_inStream, 'Export', '', 'All Files (*.*)|*.*', ToFileName);
     end;
 

@@ -85,9 +85,14 @@ page 50000 "Source Parameters"
                 trigger OnAction()
                 var
                     ShipStationMgt: Codeunit "ShipStation Mgt.";
+                    IsSuccessStatusCode: Boolean;
+                    responseText: Text;
                 begin
-                    ShipStationMgt.Connect2eShop('LOGIN2ESHOP', '', '');
-                    Message('Connection2eShop Ok!');
+                    responseText := ShipStationMgt.Connect2eShop('LOGIN2ESHOP', '', '', IsSuccessStatusCode);
+                    if IsSuccessStatusCode then
+                        Message('Connection2eShop Ok!')
+                    else
+                        Error(responseText);
                 end;
             }
         }

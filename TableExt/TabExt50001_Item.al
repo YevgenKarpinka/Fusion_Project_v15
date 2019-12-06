@@ -62,5 +62,10 @@ tableextension 50001 "Item Ext." extends Item
             DataClassification = ToBeClassified;
             CaptionML = ENU = 'Item Form', RUS = 'Форма товара';
         }
+        field(50007; "Transfered to eShop"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            CaptionML = ENU = 'Transfered to eShop', RUS = 'Отправлено в eShop';
+        }
     }
 }

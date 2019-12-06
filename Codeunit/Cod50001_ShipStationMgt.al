@@ -10,7 +10,7 @@ codeunit 50001 "ShipStation Mgt."
         testMode := _testMode;
     end;
 
-    procedure Connect2eShop(SPCode: Code[20]; Body2Request: Text; newURL: Text): Text
+    procedure Connect2eShop(SPCode: Code[20]; Body2Request: Text; newURL: Text; var IsSuccessStatusCode: Boolean): Text
     var
         SourceParameters: Record "Source Parameters";
         RequestMessage: HttpRequestMessage;
@@ -43,29 +43,19 @@ codeunit 50001 "ShipStation Mgt."
 
         Client.Send(RequestMessage, ResponseMessage);
         ResponseMessage.Content.ReadAs(responseText);
-        If ResponseMessage.IsSuccessStatusCode() then exit(responseText);
-        Error(responseText);
+        IsSuccessStatusCode := ResponseMessage.IsSuccessStatusCode();
+        exit(responseText);
     end;
 
-    procedure AddProduct2eShop(Body2Request: Text)
-    var
-        SourceParameters: Record "Source Parameters";
-        RequestMessage: HttpRequestMessage;
-        ResponseMessage: HttpResponseMessage;
-        Headers: HttpHeaders;
-        Client: HttpClient;
-        responseText: Text;
-        msgAddedProduct: TextConst ENU = 'Added Product:', RUS = 'Добавлено товаров:';
-        msgUpdatedProduct: TextConst ENU = 'Updated Product:', RUS = 'Обновлено товаров:';
-        _jsonObject: JsonObject;
+    procedure AddProduct2eShop(Body2Request: Text; var IsSuccessStatusCode: Boolean; var responseText: Text)
     begin
         if globalToken = '' then
-            globalToken := DelChr(Connect2eShop('LOGIN2ESHOP', '', ''), '<>', '"');
-        responseText := Connect2eShop('ADDPRODUCT2ESHOP', Body2Request, globalToken);
-
-        // _jsonObject.ReadFrom(responseText);
-        // Message(StrSubstNo('%1%2\%3%4', msgAddedProduct, GetJSToken(_jsonObject, 'added').AsValue().AsInteger(),
-        // msgUpdatedProduct, GetJSToken(_jsonObject, 'updated').AsValue().AsInteger()));
+            globalToken := DelChr(Connect2eShop('LOGIN2ESHOP', '', '', IsSuccessStatusCode), '<>', '"');
+        if not IsSuccessStatusCode then begin
+            responseText := globalToken;
+            exit;
+        end;
+        responseText := Connect2eShop('ADDPRODUCT2ESHOP', Body2Request, globalToken, IsSuccessStatusCode);
     end;
 
     procedure Connect2ShipStation(SPCode: Integer; Body2Request: Text; newURL: Text): Text
@@ -724,10 +714,12 @@ codeunit 50001 "ShipStation Mgt."
             Init();
             Validate("File Extension", FileManagement.GetExtension(IncomingFileName));
             Validate("File Name", CopyStr(FileManagement.GetFileNameWithoutExtension(IncomingFileName), 1, MaxStrLen("File Name")));
+
             TempBlob.CreateOutStream(_OutStream);
             _OutStream.WriteText(LabelToPDF);
             TempBlob.CreateInStream(_InStream);
             "Document Reference ID".ImportStream(_InStream, IncomingFileName);
+
             Validate("Table ID", RecRef.Number);
             FieldRef := RecRef.Field(1);
             RecNo := FieldRef.Value;

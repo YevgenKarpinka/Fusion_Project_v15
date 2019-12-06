@@ -33,7 +33,144 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         _Item: Record Item;
                         ShipStationMgt: Codeunit "ShipStation Mgt.";
                         _jsonItemList: JsonArray;
+                        _jsonErrorItemList: JsonArray;
                         _jsonItem: JsonObject;
+                        _jsonToken: JsonToken;
+                        _jsonText: Text;
+                        TotalCount: Integer;
+                        Counter: Integer;
+                        responseText: Text;
+                    begin
+                        CurrPage.SetSelectionFilter(_Item);
+
+                        Counter := 0;
+                        TotalCount := _Item.Count;
+                        ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
+
+                        if _Item.FindSet(false, false) then
+                            repeat
+                                _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
+                                Counter += 1;
+                                if _jsonItem.Get('SKU', _jsonToken) then begin
+                                    _jsonItemList.Add(_jsonItem);
+
+                                    ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
+
+                                    if ((Counter mod 50) = 0) or (Counter = TotalCount) then begin
+                                        _jsonItemList.WriteTo(_jsonText);
+
+                                        IsSuccessStatusCode := true;
+                                        ShipStationMgt.AddProduct2eShop(_jsonText, IsSuccessStatusCode, responseText);
+                                        if not IsSuccessStatusCode then begin
+                                            _jsonErrorItemList.Add(_jsonItem);
+                                            _jsonItem.ReadFrom(responseText);
+                                            _jsonErrorItemList.Add(_jsonItem);
+                                        end;
+                                        Clear(_jsonItemList);
+                                    end;
+                                end;
+                            until _Item.Next() = 0;
+                        ConfigProgressBarRecord.Close;
+                        if _jsonErrorItemList.Count > 0 then begin
+                            _jsonErrorItemList.WriteTo(_jsonText);
+                            // ShipStationMgt.AddProduct2eShop(_jsonText, IsSuccessStatusCode);
+                            CaptionMgt.SaveStreamToFile(_jsonText, 'errorItemList.txt');
+                            Message(msgSentWithError);
+                        end else
+                            Message(msgSentOk);
+                    end;
+                }
+                action(SendAll)
+                {
+                    ApplicationArea = All;
+                    CaptionML = ENU = 'Send All', RUS = 'Отправить все';
+                    Image = SuggestVendorPayments;
+
+                    trigger OnAction()
+                    var
+                        _Item: Record Item;
+                        _ItemModify: Record Item;
+                        ShipStationMgt: Codeunit "ShipStation Mgt.";
+                        _jsonItemList: JsonArray;
+                        _jsonErrorItemList: JsonArray;
+                        _jsonItem: JsonObject;
+                        _jsonToken: JsonToken;
+                        _jsonText: Text;
+                        TotalCount: Integer;
+                        Counter: Integer;
+                        msgClearTransferFlag: TextConst ENU = 'Clear Transfer Flag?', RUS = 'Очистить признак передачи?';
+                        responseText: Text;
+                    begin
+                        _Item.SetCurrentKey("Transfered to eShop");
+                        _Item.SetRange("Transfered to eShop", true);
+                        if _Item.FindFirst() then
+                            if Confirm(msgClearTransferFlag, false) then begin
+                                _Item.SetRange("Transfered to eShop", true);
+                                _Item.ModifyAll("Transfered to eShop", false);
+                                _Item.Reset();
+                            end;
+
+                        _Item.SetRange("Transfered to eShop", false);
+                        Counter := 0;
+                        TotalCount := _Item.Count;
+                        ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
+
+                        if _Item.FindSet(false, false) then
+                            repeat
+                                _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
+                                Counter += 1;
+
+                                if _jsonItem.Get('SKU', _jsonToken) then begin
+                                    _jsonItemList.Add(_jsonItem);
+
+                                    ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
+
+                                    if ((Counter mod 50) = 0) or (Counter = TotalCount) then begin
+                                        _jsonItemList.WriteTo(_jsonText);
+
+                                        IsSuccessStatusCode := true;
+                                        ShipStationMgt.AddProduct2eShop(_jsonText, IsSuccessStatusCode, responseText);
+                                        if not IsSuccessStatusCode then begin
+                                            _jsonErrorItemList.Add(_jsonItem);
+                                            _jsonItem.ReadFrom(responseText);
+                                            _jsonErrorItemList.Add(_jsonItem);
+                                        end;
+                                        Clear(_jsonItemList);
+                                        Commit();
+                                    end;
+                                    _ItemModify.Get(_Item."No.");
+                                    _ItemModify."Transfered to eShop" := true;
+                                    _ItemModify.Modify();
+                                end;
+                            until _Item.Next() = 0;
+                        ConfigProgressBarRecord.Close;
+                        if _jsonErrorItemList.Count > 0 then begin
+                            _jsonErrorItemList.WriteTo(_jsonText);
+                            // ShipStationMgt.AddProduct2eShop(_jsonText);
+                            CaptionMgt.SaveStreamToFile(_jsonText, 'errorItemList.txt');
+                            Message(msgSentWithError);
+                        end else
+                            Message(msgSentOk);
+
+                        _Item.Reset();
+                        _Item.SetCurrentKey("Transfered to eShop");
+                        _Item.SetRange("Transfered to eShop", true);
+                        _Item.ModifyAll("Transfered to eShop", false);
+                    end;
+                }
+                action(Send2File)
+                {
+                    ApplicationArea = All;
+                    CaptionML = ENU = 'Send to File', RUS = 'Отправить в файл';
+                    Image = SuggestField;
+
+                    trigger OnAction()
+                    var
+                        _Item: Record Item;
+                        ShipStationMgt: Codeunit "ShipStation Mgt.";
+                        _jsonItemList: JsonArray;
+                        _jsonItem: JsonObject;
+                        _jsonToken: JsonToken;
                         _jsonText: Text;
                         TotalCount: Integer;
                         Counter: Integer;
@@ -47,94 +184,8 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         if _Item.FindSet(false, false) then
                             repeat
                                 _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
-                                _jsonItemList.Add(_jsonItem);
-
-                                ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
-                                Counter += 1;
-
-                                if (Counter mod 50) = 0 then begin
-                                    _jsonItemList.WriteTo(_jsonText);
-                                    ShipStationMgt.AddProduct2eShop(_jsonText);
-                                    Clear(_jsonItemList);
-                                end;
-                            until _Item.Next() = 0;
-                        ConfigProgressBarRecord.Close;
-                        _jsonItemList.WriteTo(_jsonText);
-                        ShipStationMgt.AddProduct2eShop(_jsonText);
-                        // CaptionMgt.SaveStreamToFile(_jsonText);
-                        // Message(_jsonText);
-                    end;
-                }
-                action(SendAll)
-                {
-                    ApplicationArea = All;
-                    CaptionML = ENU = 'Send All', RUS = 'Отправить все';
-                    Image = SuggestVendorPayments;
-
-                    trigger OnAction()
-                    var
-                        _Item: Record Item;
-                        ShipStationMgt: Codeunit "ShipStation Mgt.";
-                        _jsonItemList: JsonArray;
-                        _jsonItem: JsonObject;
-                        _jsonText: Text;
-                        TotalCount: Integer;
-                        Counter: Integer;
-
-                    begin
-                        // CurrPage.SetSelectionFilter(_Item);
-
-                        Counter := 0;
-                        TotalCount := _Item.Count;
-                        ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
-
-                        if _Item.FindSet(false, false) then
-                            repeat
-                                _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
-                                _jsonItemList.Add(_jsonItem);
-
-                                ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
-                                Counter += 1;
-
-                                if (Counter mod 5) = 0 then begin
-                                    _jsonItemList.WriteTo(_jsonText);
-                                    ShipStationMgt.AddProduct2eShop(_jsonText);
-                                    Clear(_jsonItemList);
-                                end;
-                            until _Item.Next() = 0;
-                        ConfigProgressBarRecord.Close;
-                        _jsonItemList.WriteTo(_jsonText);
-                        ShipStationMgt.AddProduct2eShop(_jsonText);
-                        // CaptionMgt.SaveStreamToFile(_jsonText);
-                        // Message(_jsonText);
-                    end;
-                }
-                action(SendAll2File)
-                {
-                    ApplicationArea = All;
-                    CaptionML = ENU = 'Send All to File', RUS = 'Отправить все в файл';
-                    Image = SuggestVendorPayments;
-
-                    trigger OnAction()
-                    var
-                        _Item: Record Item;
-                        ShipStationMgt: Codeunit "ShipStation Mgt.";
-                        _jsonItemList: JsonArray;
-                        _jsonItem: JsonObject;
-                        _jsonText: Text;
-                        TotalCount: Integer;
-                        Counter: Integer;
-                    begin
-                        // CurrPage.SetSelectionFilter(_Item);
-
-                        Counter := 0;
-                        TotalCount := _Item.Count;
-                        ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
-
-                        if _Item.FindSet(false, false) then
-                            repeat
-                                _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
-                                _jsonItemList.Add(_jsonItem);
+                                if _jsonItem.Get('SKU', _jsonToken) then
+                                    _jsonItemList.Add(_jsonItem);
 
                                 ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
                                 Counter += 1;
@@ -142,7 +193,46 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         ConfigProgressBarRecord.Close;
                         _jsonItemList.WriteTo(_jsonText);
                         // ShipStationMgt.AddProduct2eShop(_jsonText);
-                        CaptionMgt.SaveStreamToFile(_jsonText);
+                        CaptionMgt.SaveStreamToFile(_jsonText, 'selectedItemList.txt');
+                        // Message(_jsonText);
+                    end;
+                }
+                action(SendAll2File)
+                {
+                    ApplicationArea = All;
+                    CaptionML = ENU = 'Send All to File', RUS = 'Отправить все в файл';
+                    Image = SuggestFinancialCharge;
+
+                    trigger OnAction()
+                    var
+                        _Item: Record Item;
+                        ShipStationMgt: Codeunit "ShipStation Mgt.";
+                        _jsonItemList: JsonArray;
+                        _jsonItem: JsonObject;
+                        _jsonToken: JsonToken;
+                        _jsonText: Text;
+                        TotalCount: Integer;
+                        Counter: Integer;
+                    begin
+                        // CurrPage.SetSelectionFilter(_Item);
+
+                        Counter := 0;
+                        TotalCount := _Item.Count;
+                        ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
+
+                        if _Item.FindSet(false, false) then
+                            repeat
+                                _jsonItem := ShipStationMgt.CreateJsonItemForWooComerse(_Item."No.");
+                                if _jsonItem.Get('SKU', _jsonToken) then
+                                    _jsonItemList.Add(_jsonItem);
+
+                                ConfigProgressBarRecord.Update(STRSUBSTNO(RecordsXofYMsg, Counter, TotalCount));
+                                Counter += 1;
+                            until _Item.Next() = 0;
+                        ConfigProgressBarRecord.Close;
+                        _jsonItemList.WriteTo(_jsonText);
+                        // ShipStationMgt.AddProduct2eShop(_jsonText);
+                        CaptionMgt.SaveStreamToFile(_jsonText, 'allItemList.txt');
                         // Message(_jsonText);
                     end;
                 }
@@ -152,6 +242,9 @@ pageextension 50009 "Item List Ext." extends "Item List"
     var
         RecordsXofYMsg: TextConst ENU = 'Records: %1 of %2', RUS = 'Запись: %1 из %2';
         ApplyingURLMsg: TextConst ENU = 'Applying Table %1', RUS = 'Применяется таблица %1';
+        msgSentOk: TextConst ENU = 'Sent into eShop is Ok!', RUS = 'Отправлено в eShop!';
+        msgSentWithError: TextConst ENU = 'Sent into eShop is not Ok!', RUS = 'Отправлено в eShop с ошибками!';
         ConfigProgressBarRecord: Codeunit "Config Progress Bar";
         CaptionMgt: Codeunit "Caption Mgt.";
+        IsSuccessStatusCode: Boolean;
 }
