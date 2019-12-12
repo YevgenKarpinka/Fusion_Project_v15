@@ -7,6 +7,7 @@ codeunit 50005 "Config Progress Bar"
 
     PROCEDURE Init(NewMaxCount: Integer; NewStepCount: Integer; WindowTitle: Text);
     BEGIN
+        if not GuiAllowed then exit;
         Counter := 0;
         MaxCount := NewMaxCount;
         IF NewStepCount = 0 THEN
@@ -21,6 +22,7 @@ codeunit 50005 "Config Progress Bar"
 
     PROCEDURE Update(WindowText: Text);
     BEGIN
+        if not GuiAllowed then exit;
         IF WindowText <> '' THEN BEGIN
             Counter := Counter + 1;
             IF Counter MOD StepCount = 0 THEN BEGIN
@@ -34,6 +36,7 @@ codeunit 50005 "Config Progress Bar"
     [TryFunction]
     PROCEDURE UpdateCount(WindowText: Text; Count: Integer);
     BEGIN
+        if not GuiAllowed then exit;
         IF WindowText <> '' THEN BEGIN
             IF LastWindowText = WindowText THEN
                 WindowTextCount += 1
@@ -48,6 +51,7 @@ codeunit 50005 "Config Progress Bar"
 
     PROCEDURE Close();
     BEGIN
+        if not GuiAllowed then exit;
         Window.Close();
     END;
 

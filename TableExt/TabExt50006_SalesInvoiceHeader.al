@@ -51,6 +51,11 @@ tableextension 50006 "Sales Invoice Header Ext." extends "Sales Invoice Header"
             CaptionML = ENU = 'ShipStation Shipment Amount', RUS = 'Сума отгрузки ShipStation';
             Editable = false;
         }
+        field(50008; "IC Document No."; Code[20])
+        {
+            DataClassification = ToBeClassified;
+            CaptionML = ENU = 'IC Document No.', RUS = 'МФ Документ Но.';
+        }
     }
 
     keys

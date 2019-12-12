@@ -101,16 +101,16 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         msgClearTransferFlag: TextConst ENU = 'Clear Transfer Flag?', RUS = 'Очистить признак передачи?';
                         responseText: Text;
                     begin
-                        _Item.SetCurrentKey("Transfered to eShop");
-                        _Item.SetRange("Transfered to eShop", true);
-                        if _Item.FindFirst() then
-                            if Confirm(msgClearTransferFlag, false) then begin
-                                _Item.SetRange("Transfered to eShop", true);
-                                _Item.ModifyAll("Transfered to eShop", false);
-                                _Item.Reset();
-                            end;
-
-                        _Item.SetRange("Transfered to eShop", false);
+                        if GuiAllowed then begin
+                            _Item.SetCurrentKey("Transfered to eShop");
+                            _Item.SetRange("Transfered to eShop", true);
+                            if _Item.FindFirst() then
+                                if Confirm(msgClearTransferFlag, false) then begin
+                                    _Item.SetRange("Transfered to eShop", true);
+                                    _Item.ModifyAll("Transfered to eShop", false);
+                                end;
+                            _Item.SetRange("Transfered to eShop", false);
+                        end;
                         Counter := 0;
                         TotalCount := _Item.Count;
                         ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
