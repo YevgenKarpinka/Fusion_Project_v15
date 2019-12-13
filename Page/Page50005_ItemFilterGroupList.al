@@ -35,5 +35,4 @@ page 50005 "Item Filter Group List"
     {
 
     }
-
 }

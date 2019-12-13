@@ -82,17 +82,6 @@ page 50004 "Bank Checks Archive"
                         until _BankCheck.Next() = 0;
                 end;
             }
-            // action(Refuse)
-            // {
-            //     ApplicationArea = All;
-            //     Image = Reject;
-
-            //     trigger OnAction()
-            //     var
-            //         _BankCheck: Record "Bank Check Journal Line";
-            //     begin
-            //     end;
-            // }
         }
     }
 

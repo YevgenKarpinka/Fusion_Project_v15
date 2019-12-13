@@ -4,7 +4,6 @@ page 50001 "Shipping Rates"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Shipping Agent";
-    // SourceTableTemporary = true;
     SourceTableView = where("SS Code" = filter('<>'''''));
     Editable = false;
 
@@ -36,8 +35,7 @@ page 50001 "Shipping Rates"
 
     trigger OnOpenPage()
     begin
-        // CurrPage.subpageShippingRates.Page.InitPage(recSAS);
-        // CurrPage.subpageShippingRates.Page.SetTableView(recSAS);
+
     end;
 
     trigger OnClosePage()

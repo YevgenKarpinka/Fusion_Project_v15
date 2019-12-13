@@ -27,9 +27,6 @@ table 50004 "Item Filter Group"
         }
     }
 
-    var
-        myInt: Integer;
-
     trigger OnInsert()
     begin
 

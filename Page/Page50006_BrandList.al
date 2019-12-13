@@ -35,5 +35,4 @@ page 50006 "Brand List"
     {
 
     }
-
 }

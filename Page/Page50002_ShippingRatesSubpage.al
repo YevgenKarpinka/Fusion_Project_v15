@@ -4,7 +4,6 @@ page 50002 "Shipping Rates Subpage"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Shipping Agent Services";
-    // SourceTableTemporary = true;
     SourceTableView = where("Shipment Cost" = filter('<>0'));
 
     InsertAllowed = false;

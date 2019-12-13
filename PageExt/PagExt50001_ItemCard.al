@@ -708,5 +708,4 @@ pageextension 50001 "Item Card Ext." extends "Item Card"
         txtIngredientsRU: Text;
         txtIndicationsRU: Text;
         txtDirectionsRU: Text;
-
 }

@@ -14,7 +14,4 @@ tableextension 50007 "General Ledger Setup Ext." extends "General Ledger Setup"
             TableRelation = "Gen. Journal Batch".Name WHERE("Journal Template Name" = FIELD("Journal Template Name"));
         }
     }
-
-    var
-        myInt: Integer;
 }

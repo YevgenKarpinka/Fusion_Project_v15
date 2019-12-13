@@ -84,9 +84,6 @@ table 50003 "Bank Check Journal Line"
         key(SK01; "Bank Check No.", "Bank Check Date") { }
     }
 
-    var
-        myInt: Integer;
-
     trigger OnInsert()
     begin
         SetLastModifiedDateTime();
