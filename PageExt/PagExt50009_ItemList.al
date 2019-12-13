@@ -241,7 +241,7 @@ pageextension 50009 "Item List Ext." extends "Item List"
     }
     var
         RecordsXofYMsg: TextConst ENU = 'Records: %1 of %2', RUS = 'Запись: %1 из %2';
-        ApplyingURLMsg: TextConst ENU = 'Applying Table %1', RUS = 'Применяется таблица %1';
+        ApplyingURLMsg: TextConst ENU = 'Sending Table %1', RUS = 'Пересылается таблица %1';
         msgSentOk: TextConst ENU = 'Sent into eShop is Ok!', RUS = 'Отправлено в eShop!';
         msgSentWithError: TextConst ENU = 'Sent into eShop is not Ok!', RUS = 'Отправлено в eShop с ошибками!';
         ConfigProgressBarRecord: Codeunit "Config Progress Bar";
