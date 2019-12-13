@@ -3,13 +3,19 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
     layout
     {
         // Add changes to page layout here
+        addafter(Status)
+        {
+            field("IC Document No."; "IC Document No.")
+            {
+                ApplicationArea = All;
+            }
+        }
         addafter("Shipping Agent Code")
         {
             field("Agent Name"; GetShippingAgentName("Shipping Agent Code"))
             {
                 ApplicationArea = All;
                 Style = Strong;
-                // ShowCaption = false;
             }
         }
         addafter("Shipping Agent Service Code")
@@ -18,7 +24,6 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
             {
                 ApplicationArea = All;
                 Style = Strong;
-                // ShowCaption = false;
             }
         }
         addafter(Control1900201301)
@@ -107,7 +112,6 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                         txtOrdersList: Text;
                     begin
                         CurrPage.SetSelectionFilter(_SH);
-                        // ShipStationMgt.SetTestMode(true);
                         if _SH.FindSet(false, false) then
                             repeat
                                 ShipStationMgt.CreateOrderInShipStation(_SH."No.");
@@ -127,16 +131,11 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
 
                     trigger OnAction()
                     var
-                        // recSAS: Record "Shipping Agent Services" temporary;
-                        // recSA: Record "Shipping Agent" temporary;
                         recSAS: Record "Shipping Agent Services";
                         pageShippingRates: Page "Shipping Rates";
                         SSMgt: Codeunit "ShipStation Mgt.";
                     begin
-                        // SSMgt.GetShippingRatesByCarrier(Rec, recSA, recSAS);
                         SSMgt.GetShippingRatesByCarrier(Rec);
-                        // pageShippingRates.InitPage(recSA, recSAS);
-                        // pageShippingRates.SetTableView(recSA);
                         Commit();
                         pageShippingRates.LookupMode(true);
                         if pageShippingRates.RunModal() = Action::LookupOK then begin
@@ -157,8 +156,6 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                         ShipStationMgt: Codeunit "ShipStation Mgt.";
                         _SH: Record "Sales Header";
                     begin
-                        // CurrPage.SetSelectionFilter(_SH);
-                        // ShipStationMgt.SetTestMode(true);
                         if _SH.FindSet(false, false) then
                             repeat
                                 ShipStationMgt.CreateLabel2OrderInShipStation(_SH."No.");
@@ -176,8 +173,6 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                         ShipStationMgt: Codeunit "ShipStation Mgt.";
                         _SH: Record "Sales Header";
                     begin
-                        // CurrPage.SetSelectionFilter(_SH);
-                        // ShipStationMgt.SetTestMode(true);
                         if _SH.FindSet(false, false) then
                             repeat
                                 ShipStationMgt.VoidLabel2OrderInShipStation(_SH."No.");
@@ -186,6 +181,5 @@ pageextension 50005 "Sales Order Ext." extends "Sales Order"
                 }
             }
         }
-
     }
 }

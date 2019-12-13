@@ -1,1 +1,1 @@
-﻿{"Added":[],"Modified":[],"Removed":[]}
+﻿{"Added":[],"Modified":[{"Id":50002,"Kind":16,"Name":"Config. Packages Ext.","PackagePath":"/src/PageExt/PagExt50002_ConfigPackageSubform.al"},{"Id":50005,"Kind":16,"Name":"Sales Order Ext.","PackagePath":"/src/PageExt/PagExt50005_SalesOrder.al"},{"Id":50008,"Kind":16,"Name":"Purchase Order Ext.","PackagePath":"/src/PageExt/PagExt50008_PurchaseOrder.al"}],"Removed":[]}

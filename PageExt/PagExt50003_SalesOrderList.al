@@ -35,11 +35,6 @@ pageextension 50003 "Sales Order List Ext." extends "Sales Order List"
                 ApplicationArea = All;
 
             }
-            // field("ShipStation Tracking No."; "ShipStation Tracking No.")
-            // {
-            //     ApplicationArea = All;
-
-            // }
         }
     }
 
@@ -127,10 +122,6 @@ pageextension 50003 "Sales Order List Ext." extends "Sales Order List"
                     end;
                 }
             }
-
         }
     }
-
-    var
-        myInt: Integer;
 }

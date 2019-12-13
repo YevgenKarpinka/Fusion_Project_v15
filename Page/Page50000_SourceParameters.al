@@ -97,7 +97,4 @@ page 50000 "Source Parameters"
             }
         }
     }
-
-    var
-        myInt: Integer;
 }

@@ -299,34 +299,6 @@ table 50000 "Item Description"
     end;
     // <<<
 
-    // >>
-    // procedure SetTextToBlobField(newValueToBlob: Text; _FieldNo: Integer)
-    // var
-    //     _outStream: OutStream;
-    //     ItemDescRecRef: RecordRef;
-    //     ItemDescFieldRef: FieldRef;
-    // begin
-    //     if newValueToBlob = '' then exit;
-    //     ItemDescRecRef.GetTable(Rec);
-    //     ItemDescFieldRef := ItemDescRecRef.Field(_FieldNo);
-    //     ItemDescFieldRef.Value(newValueToBlob);
-    //     if ItemDescRecRef.MODIFY then;
-    // end;
-
-    // procedure GetTextFromBlobField(_FieldNo: Integer): Text
-    // var
-    //     _outStream: OutStream;
-    //     ItemDescRecRef: RecordRef;
-    //     ItemDescFieldRef: FieldRef;
-    // begin
-    //     ItemDescRecRef.GetTable(Rec);
-    //     ItemDescFieldRef := ItemDescRecRef.Field(_FieldNo);
-    //     ItemDescFieldRef.CalcField();
-    //     if ItemDescFieldRef.Length = 0 then exit('');
-    //     exit(ItemDescFieldRef.Value);
-    // end;
-    // <<
-
     procedure SetTextToBlobField(_FieldNo: Integer; _TextField: Text);
     var
         tmpTenantMedia: Record "Tenant Media" temporary;

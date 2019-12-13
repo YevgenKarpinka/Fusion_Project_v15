@@ -73,7 +73,6 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         ConfigProgressBarRecord.Close;
                         if _jsonErrorItemList.Count > 0 then begin
                             _jsonErrorItemList.WriteTo(_jsonText);
-                            // ShipStationMgt.AddProduct2eShop(_jsonText, IsSuccessStatusCode);
                             CaptionMgt.SaveStreamToFile(_jsonText, 'errorItemList.txt');
                             Message(msgSentWithError);
                         end else
@@ -146,7 +145,6 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         ConfigProgressBarRecord.Close;
                         if _jsonErrorItemList.Count > 0 then begin
                             _jsonErrorItemList.WriteTo(_jsonText);
-                            // ShipStationMgt.AddProduct2eShop(_jsonText);
                             CaptionMgt.SaveStreamToFile(_jsonText, 'errorItemList.txt');
                             Message(msgSentWithError);
                         end else
@@ -192,9 +190,7 @@ pageextension 50009 "Item List Ext." extends "Item List"
                             until _Item.Next() = 0;
                         ConfigProgressBarRecord.Close;
                         _jsonItemList.WriteTo(_jsonText);
-                        // ShipStationMgt.AddProduct2eShop(_jsonText);
                         CaptionMgt.SaveStreamToFile(_jsonText, 'selectedItemList.txt');
-                        // Message(_jsonText);
                     end;
                 }
                 action(SendAll2File)
@@ -214,8 +210,6 @@ pageextension 50009 "Item List Ext." extends "Item List"
                         TotalCount: Integer;
                         Counter: Integer;
                     begin
-                        // CurrPage.SetSelectionFilter(_Item);
-
                         Counter := 0;
                         TotalCount := _Item.Count;
                         ConfigProgressBarRecord.Init(TotalCount, Counter, STRSUBSTNO(ApplyingURLMsg, _Item.TableCaption));
@@ -231,14 +225,13 @@ pageextension 50009 "Item List Ext." extends "Item List"
                             until _Item.Next() = 0;
                         ConfigProgressBarRecord.Close;
                         _jsonItemList.WriteTo(_jsonText);
-                        // ShipStationMgt.AddProduct2eShop(_jsonText);
                         CaptionMgt.SaveStreamToFile(_jsonText, 'allItemList.txt');
-                        // Message(_jsonText);
                     end;
                 }
             }
         }
     }
+
     var
         RecordsXofYMsg: TextConst ENU = 'Records: %1 of %2', RUS = 'Запись: %1 из %2';
         ApplyingURLMsg: TextConst ENU = 'Sending Table %1', RUS = 'Пересылается таблица %1';

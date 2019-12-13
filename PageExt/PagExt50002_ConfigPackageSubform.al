@@ -43,14 +43,11 @@ pageextension 50002 "Config. Packages Ext." extends "Config. Package Subform"
             }
         }
     }
-    var // ExcelBigDataMigrator: Codeunit "Excel BigData Migrator";
+
     procedure ImportBigDataExcel()
     var
         ItemDescrManagement: Codeunit "Item Descr. Management";
     begin
-        // CurrPage.SETSELECTIONFILTER(ConfigPackageTable);
-        // ExcelBigDataMigrator.SetSelectedTables(ConfigPackageTable);
-        // ExcelBigDataMigrator.ImportExcelFromSelectedPackage("Package Code");
         ItemDescrManagement.ImportExcelSheet;
     end;
 
@@ -61,15 +58,6 @@ pageextension 50002 "Config. Packages Ext." extends "Config. Package Subform"
     begin
         CurrPage.SetSelectionFilter(ConfigPackageTable);
         ItemDescrManagement.Export2JSON(ConfigPackageTable);
-    end;
-
-    local procedure SelectionConfirmMessage(ConfigPackageTable: Record "Config. Package Table"): Text
-    var
-        myInt: Integer;
-    begin
-        // IF ConfigPackageTable.COUNT <> 1 THEN
-        //     EXIT(STRSUBSTNO(MultipleTablesSelectedQst, ConfigPackageTable.COUNT));
-        // EXIT(SingleTableSelectedQst);
     end;
 
     var
