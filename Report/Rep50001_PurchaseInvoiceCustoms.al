@@ -1,6 +1,6 @@
 report 50001 "Purchase Invoice Customs"
 {
-    CaptionML = ENU = 'Purchase Invoice Customs', RUS = 'Таможенный заказ покупки';
+    CaptionML = ENU = 'Purchase Invoice Customs', RUS = 'Таможенный счет покупки';
     DefaultLayout = RDLC;
     RDLCLayout = 'Purchase Invoice Customs.rdl';
     UsageCategory = ReportsAndAnalysis;

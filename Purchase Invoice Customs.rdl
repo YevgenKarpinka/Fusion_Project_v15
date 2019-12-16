@@ -11,85 +11,6 @@
       <rd:DataSourceID>14387191-9da5-46b3-9229-9340f4ba8f8b</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="VendorName">
-          <DataField>VendorName</DataField>
-        </Field>
-        <Field Name="VendorAdress">
-          <DataField>VendorAdress</DataField>
-        </Field>
-        <Field Name="VendorCity">
-          <DataField>VendorCity</DataField>
-        </Field>
-        <Field Name="VendorCountry">
-          <DataField>VendorCountry</DataField>
-        </Field>
-        <Field Name="CompanyName">
-          <DataField>CompanyName</DataField>
-        </Field>
-        <Field Name="CompanyAdress">
-          <DataField>CompanyAdress</DataField>
-        </Field>
-        <Field Name="CompanyCity">
-          <DataField>CompanyCity</DataField>
-        </Field>
-        <Field Name="InvoiceNo">
-          <DataField>InvoiceNo</DataField>
-        </Field>
-        <Field Name="InvoiceDate">
-          <DataField>InvoiceDate</DataField>
-        </Field>
-        <Field Name="InvoiceTotal">
-          <DataField>InvoiceTotal</DataField>
-        </Field>
-        <Field Name="InvoiceTotalFormat">
-          <DataField>InvoiceTotalFormat</DataField>
-        </Field>
-        <Field Name="PositionNo">
-          <DataField>PositionNo</DataField>
-        </Field>
-        <Field Name="Description">
-          <DataField>Description</DataField>
-        </Field>
-        <Field Name="Quantity">
-          <DataField>Quantity</DataField>
-        </Field>
-        <Field Name="QuantityFormat">
-          <DataField>QuantityFormat</DataField>
-        </Field>
-        <Field Name="DirectUnitCost">
-          <DataField>DirectUnitCost</DataField>
-        </Field>
-        <Field Name="DirectUnitCostFormat">
-          <DataField>DirectUnitCostFormat</DataField>
-        </Field>
-        <Field Name="AmountIncludingVAT">
-          <DataField>AmountIncludingVAT</DataField>
-        </Field>
-        <Field Name="AmountIncludingVATFormat">
-          <DataField>AmountIncludingVATFormat</DataField>
-        </Field>
-        <Field Name="GrossWeight">
-          <DataField>GrossWeight</DataField>
-        </Field>
-        <Field Name="GrossWeightFormat">
-          <DataField>GrossWeightFormat</DataField>
-        </Field>
-        <Field Name="FDA_Value">
-          <DataField>FDA_Value</DataField>
-        </Field>
-        <Field Name="HTS_Value">
-          <DataField>HTS_Value</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -1594,4 +1515,83 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
   <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="VendorName">
+          <DataField>VendorName</DataField>
+        </Field>
+        <Field Name="VendorAdress">
+          <DataField>VendorAdress</DataField>
+        </Field>
+        <Field Name="VendorCity">
+          <DataField>VendorCity</DataField>
+        </Field>
+        <Field Name="VendorCountry">
+          <DataField>VendorCountry</DataField>
+        </Field>
+        <Field Name="CompanyName">
+          <DataField>CompanyName</DataField>
+        </Field>
+        <Field Name="CompanyAdress">
+          <DataField>CompanyAdress</DataField>
+        </Field>
+        <Field Name="CompanyCity">
+          <DataField>CompanyCity</DataField>
+        </Field>
+        <Field Name="InvoiceNo">
+          <DataField>InvoiceNo</DataField>
+        </Field>
+        <Field Name="InvoiceDate">
+          <DataField>InvoiceDate</DataField>
+        </Field>
+        <Field Name="InvoiceTotal">
+          <DataField>InvoiceTotal</DataField>
+        </Field>
+        <Field Name="InvoiceTotalFormat">
+          <DataField>InvoiceTotalFormat</DataField>
+        </Field>
+        <Field Name="PositionNo">
+          <DataField>PositionNo</DataField>
+        </Field>
+        <Field Name="Description">
+          <DataField>Description</DataField>
+        </Field>
+        <Field Name="Quantity">
+          <DataField>Quantity</DataField>
+        </Field>
+        <Field Name="QuantityFormat">
+          <DataField>QuantityFormat</DataField>
+        </Field>
+        <Field Name="DirectUnitCost">
+          <DataField>DirectUnitCost</DataField>
+        </Field>
+        <Field Name="DirectUnitCostFormat">
+          <DataField>DirectUnitCostFormat</DataField>
+        </Field>
+        <Field Name="AmountIncludingVAT">
+          <DataField>AmountIncludingVAT</DataField>
+        </Field>
+        <Field Name="AmountIncludingVATFormat">
+          <DataField>AmountIncludingVATFormat</DataField>
+        </Field>
+        <Field Name="GrossWeight">
+          <DataField>GrossWeight</DataField>
+        </Field>
+        <Field Name="GrossWeightFormat">
+          <DataField>GrossWeightFormat</DataField>
+        </Field>
+        <Field Name="FDA_Value">
+          <DataField>FDA_Value</DataField>
+        </Field>
+        <Field Name="HTS_Value">
+          <DataField>HTS_Value</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>
