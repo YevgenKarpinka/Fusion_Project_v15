@@ -1,9 +1,9 @@
-pageextension 50008 "Purchase Order Ext." extends "Purchase Order"
+pageextension 50011 "Posted Purchase Invoice Ext." extends "Posted Purchase Invoice"
 {
     layout
     {
         // Add changes to page layout here
-        addafter(Status)
+        addafter("Vendor Invoice No.")
         {
             field("IC Document No."; "IC Document No.")
             {
@@ -15,21 +15,21 @@ pageextension 50008 "Purchase Order Ext." extends "Purchase Order"
     actions
     {
         // Add changes to page actions here
-        addafter("&Print")
+        addafter(Print)
         {
             action("Print Order Customs")
             {
                 ApplicationArea = All;
                 Image = PurchaseInvoice;
-                CaptionML = ENU = 'Purchase Order Customs', RUS = 'Таможенный заказ покупки';
+                CaptionML = ENU = 'Purchase Invoice Customs', RUS = 'Таможенный счет покупки';
 
                 trigger OnAction()
                 var
-                    _PurchaseHeader: Record "Purchase Header";
+                    _PurchInvHeader: Record "Purch. Inv. Header";
                 begin
-                    _PurchaseHeader := Rec;
-                    CurrPage.SETSELECTIONFILTER(_PurchaseHeader);
-                    Report.Run(Report::"Purchase Order Customs", true, true, _PurchaseHeader);
+                    _PurchInvHeader := Rec;
+                    CurrPage.SETSELECTIONFILTER(_PurchInvHeader);
+                    Report.Run(Report::"Purchase Invoice Customs", true, true, _PurchInvHeader);
                 end;
             }
         }

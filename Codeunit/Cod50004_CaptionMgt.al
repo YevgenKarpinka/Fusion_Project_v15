@@ -18,16 +18,15 @@ codeunit 50004 "Caption Mgt."
 
     procedure GetItemAttributeValue(ItemAttributeName: Text[50]; ItemNo: Code[20]): Text
     var
-        ItemAttr: Record "Item Attribute";
-        ItemAttrValue: Record "Item Attribute Value";
-        ItemAttrValMapping: Record "Item Attribute Value Mapping";
+        _ItemDescription: Record "Item Description";
     begin
-        ItemAttr.SetRange(Name, ItemAttributeName);
-        ItemAttr.SetRange(Blocked, false);
-        if ItemAttr.FindFirst() then
-            if ItemAttrValMapping.Get(Database::Item, ItemNo, ItemAttr.ID) then
-                if ItemAttrValue.Get(ItemAttrValMapping."Item Attribute ID", ItemAttrValMapping."Item Attribute Value ID") then
-                    exit(ItemAttrValue.Value);
+        if _ItemDescription.Get(ItemNo) then
+            case ItemAttributeName of
+                'FDA Code':
+                    exit(_ItemDescription."FDA Code");
+                'HTS Code':
+                    exit(_ItemDescription."HTS Code");
+            end;
         exit('');
     end;
 
