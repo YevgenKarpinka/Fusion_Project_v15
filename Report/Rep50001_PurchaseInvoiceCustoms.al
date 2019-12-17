@@ -20,7 +20,7 @@ report 50001 "Purchase Invoice Customs"
             column(CompanyAdress; "Ship-to Address" + "Ship-to Address 2") { }
             column(CompanyCity; "Ship-to City" + ', ' + "Ship-to County" + ' ' + "Ship-to Post Code") { }
             column(InvoiceNo; "Vendor Invoice No.") { }
-            column(InvoiceDate; Format("Order Date")) { }
+            column(InvoiceDate; CaptionMgt.FormatDateUS("Order Date")) { }
             column(InvoiceTotal; PurchaseHeader."Amount Including VAT") { }
             dataitem(PurchaseLine; "Purchase Line")
             {
@@ -72,18 +72,7 @@ report 50001 "Purchase Invoice Customs"
         actions { }
     }
 
-    labels
-    {
-        lblPosition = '#', Comment = 'Foo', MaxLength = 1, Locked = true;
-        lblItemName = 'Item Name', Comment = 'Foo', MaxLength = 10, Locked = true;
-        lblQty = 'Qty', Comment = 'Foo', MaxLength = 3, Locked = true;
-        lblSalesPrice = 'Sales Price', Comment = 'Foo', MaxLength = 15, Locked = true;
-        lblAmount = 'Amount', Comment = 'Foo', MaxLength = 10, Locked = true;
-        lblFDA = 'FDA', Comment = 'Foo', MaxLength = 3, Locked = true;
-        lblWtg = 'Wt/g', Comment = 'Foo', MaxLength = 4, Locked = true;
-        lblHTS = 'HTS', Comment = 'Foo', MaxLength = 3, Locked = true;
-        lblTotal = 'Total', Comment = 'Foo', MaxLength = 5, Locked = true;
-    }
+    labels { }
 
     trigger OnInitReport()
     begin

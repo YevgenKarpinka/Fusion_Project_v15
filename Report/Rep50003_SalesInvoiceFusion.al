@@ -1,17 +1,16 @@
-report 50002 "Sales Order Fusion"
+report 50003 "Sales Invoice Fusion"
 {
-    CaptionML = ENU = 'Sales Order Fusion', RUS = 'Заказ продажи Fusion';
+    CaptionML = ENU = 'Sales Invoice Fusion', RUS = 'Заказ продажи Fusion';
     DefaultLayout = RDLC;
-    RDLCLayout = 'Sales Order Fusion.rdl';
+    RDLCLayout = 'Sales Invoice Fusion.rdl';
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
 
     dataset
     {
-        dataitem(SalesHeader; "Sales Header")
+        dataitem(SalesInvoiceHeader; "Sales Invoice Header")
         {
             RequestFilterFields = "No.", "Sell-to Customer No.";
-            DataItemTableView = where("Document Type" = Const(Order));
 
             column(CompanyName; CompanyInfo.Name + CompanyInfo."Name 2") { }
             column(CompanyAdress; CompanyInfo.Address + CompanyInfo."Address 2") { }
@@ -27,9 +26,9 @@ report 50002 "Sales Order Fusion"
             {
                 DecimalPlaces = 2 : 2;
             }
-            dataitem(SaleLine; "Sales Line")
+            dataitem(SaleInvoiceLine; "Sales Invoice Line")
             {
-                DataItemTableView = sorting("Document Type", "Document No.", "Line No.");
+                DataItemTableView = sorting("Document No.", "Line No.");
                 DataItemLink = "Document No." = field("No.");
 
                 column(Quantity; Quantity)

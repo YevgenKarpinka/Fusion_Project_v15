@@ -43,4 +43,8 @@ codeunit 50004 "Caption Mgt."
         DownloadFromStream(_inStream, 'Export', '', 'All Files (*.*)|*.*', ToFileName);
     end;
 
+    procedure FormatDateUS(Date2Format: Date): Text
+    begin
+        exit(Format(Date2Format, 0, '<Month,2>/<Day,2>/<Year4>'));
+    end;
 }

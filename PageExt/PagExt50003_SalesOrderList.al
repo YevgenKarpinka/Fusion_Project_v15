@@ -41,6 +41,24 @@ pageextension 50003 "Sales Order List Ext." extends "Sales Order List"
     actions
     {
         // Add changes to page actions here
+        addafter("Work Order")
+        {
+            action("Sales Order Fusion")
+            {
+                ApplicationArea = All;
+                Image = PrintReport;
+                CaptionML = ENU = 'Sales Order Fusion', RUS = 'Заказ продажи Fusion';
+
+                trigger OnAction()
+                var
+                    _SalesHeader: Record "Sales Header";
+                begin
+                    _SalesHeader := Rec;
+                    CurrPage.SETSELECTIONFILTER(_SalesHeader);
+                    Report.Run(Report::"Sales Order Fusion", true, true, _SalesHeader);
+                end;
+            }
+        }
         addbefore("F&unctions")
         {
             group(actionShipStation)
